@@ -1,0 +1,54 @@
+app = "pika-backend"
+primary_region = "ord"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+  API_BASE_URL = "https://pika-backend.fly.dev"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 100
+    soft_limit = 50
+
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "10s"
+  method = "GET"
+  path = "/health"
+
+[vm]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
+
+# Mount for temporary file storage (if needed)
+[[mounts]]
+  source = "pika_data"
+  destination = "/data"
+
+# Secrets that should be set via fly secrets:
+# fly secrets set DATABASE_URL="..."
+# fly secrets set REDIS_URL="..."
+# fly secrets set JWT_SECRET="..."
+# fly secrets set ENCRYPTION_KEY="..."
+# fly secrets set SESSION_SECRET="..."
+# fly secrets set STRIPE_SECRET_KEY="..."
+# fly secrets set STRIPE_WEBHOOK_SECRET="..."
+# fly secrets set MERCADOPAGO_ACCESS_TOKEN="..."
+# fly secrets set MERCADOPAGO_WEBHOOK_SECRET="..."
+# fly secrets set STIPAGO_API_KEY="..."
+# fly secrets set STIPAGO_SECRET_KEY="..."
+# fly secrets set STIPAGO_WEBHOOK_SECRET="..."

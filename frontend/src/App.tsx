@@ -1,0 +1,61 @@
+import { lazy, Suspense } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { useAppStore } from '@/store'
+import { DashboardLayout } from '@/components/layout/DashboardLayout'
+import { Skeleton } from '@/components/ui/skeleton'
+
+const DashboardOverviewPage = lazy(() => import('@/components/pages/DashboardOverviewPage').then(m => ({ default: m.default })))
+const WalletPage = lazy(() => import('@/components/pages/WalletPage').then(m => ({ default: m.default })))
+const TransactionsPage = lazy(() => import('@/components/pages/TransactionsPage').then(m => ({ default: m.default })))
+const SendPage = lazy(() => import('@/components/pages/SendPage').then(m => ({ default: m.default })))
+const QRPage = lazy(() => import('@/components/pages/QRPage').then(m => ({ default: m.default })))
+const ContactsPage = lazy(() => import('@/components/pages/ContactsPage').then(m => ({ default: m.default })))
+const SettingsPage = lazy(() => import('@/components/pages/SettingsPage').then(m => ({ default: m.default })))
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Skeleton className="h-8 w-48" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-24" />
+        ))}
+      </div>
+      <Skeleton className="h-64" />
+    </div>
+  )
+}
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user } = useAppStore()
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+  return <>{children}</>
+}
+
+export default function App() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <Routes>
+                <Route index element={<DashboardOverviewPage />} />
+                <Route path="wallet" element={<WalletPage />} />
+                <Route path="transactions" element={<TransactionsPage />} />
+                <Route path="send" element={<SendPage />} />
+                <Route path="qr" element={<QRPage />} />
+                <Route path="contacts" element={<ContactsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Routes>
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </Suspense>
+  )
+}

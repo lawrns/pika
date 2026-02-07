@@ -1,0 +1,479 @@
+/**
+ * PIKA DESIGN SYSTEM
+ * Fintech-inspired colors for trust, speed, and modernity
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   DESIGN TOKENS - CSS Variables
+   ============================================ */
+
+@layer base {
+  :root {
+    /* Core Palette */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    /* Primary - Electric Violet (Speed, Energy, Trust) */
+    --primary: 263 85% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 263 85% 70%;
+
+    /* Secondary - Slate Gray (Professional, Balanced) */
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    /* Muted - Subtle backgrounds */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Accent - Energetic Pop */
+    --accent: 263 85% 95%;
+    --accent-foreground: 263 85% 45%;
+
+    /* Destructive - Error States */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* UI Elements */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 263 85% 60%;
+    --radius: 0.75rem;
+    --shadow: 240 10% 3.9%;
+
+    /* Brand Colors - Fintech Optimized */
+    --brand-electric: 263 85% 60%;      /* Main brand - Electric Violet */
+    --brand-trust: 220 85% 55%;         /* Trust Blue */
+    --brand-success: 150 65% 45%;       /* Success Green */
+    --brand-warning: 45 93% 47%;        /* Warning Amber */
+    --brand-danger: 0 72% 51%;          /* Danger Red */
+
+    /* Payment States */
+    --payment-incoming: 150 65% 45%;    /* Money received */
+    --payment-outgoing: 240 60% 55%;    /* Money sent */
+    --payment-pending: 45 93% 47%;      /* Processing */
+  }
+
+  .dark {
+    /* Core Palette */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary - Electric Violet (enhanced for dark mode) */
+    --primary: 263 85% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 263 85% 75%;
+
+    /* Secondary */
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    /* Muted */
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    /* Accent */
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    /* Destructive */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* UI Elements */
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 263 85% 65%;
+    --shadow: 0 0% 0%;
+
+    /* Brand Colors - Dark Mode Adjusted */
+    --brand-electric: 263 85% 65%;
+    --brand-trust: 220 85% 60%;
+    --brand-success: 150 65% 50%;
+    --brand-warning: 45 93% 52%;
+    --brand-danger: 0 72% 56%;
+
+    /* Payment States */
+    --payment-incoming: 150 65% 50%;
+    --payment-outgoing: 240 60% 60%;
+    --payment-pending: 45 93% 52%;
+  }
+}
+
+/* ============================================
+   TYPOGRAPHY SYSTEM
+   ============================================ */
+
+@layer base {
+  /* Font Families */
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Display Typography */
+  h1 {
+    @apply text-display-md font-display font-bold tracking-tight;
+  }
+
+  h2 {
+    @apply text-3xl font-display font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-2xl font-display font-semibold tracking-tight;
+  }
+
+  h4 {
+    @apply text-xl font-display font-semibold;
+  }
+
+  h5 {
+    @apply text-lg font-semibold;
+  }
+
+  h6 {
+    @apply text-base font-semibold;
+  }
+
+  /* Content Typography */
+  p {
+    @apply text-base leading-relaxed;
+  }
+
+  strong, b {
+    @apply font-semibold;
+  }
+
+  /* Semantic Text Colors */
+  .text-primary {
+    @apply text-foreground;
+  }
+
+  .text-secondary {
+    @apply text-muted-foreground;
+  }
+
+  .text-brand {
+    @apply text-[hsl(var(--brand-electric))];
+  }
+
+  /* Monospace for numbers/code */
+  .font-mono-number {
+    @apply font-mono tabular-nums;
+  }
+}
+
+/* ============================================
+   LAYOUT PATTERNS
+   ============================================ */
+
+@layer components {
+  /* Container */
+  .container-pika {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Card System */
+  .card-pika {
+    @apply rounded-brand-lg bg-card border border-border shadow-brand-md;
+  }
+
+  .card-pika-hover {
+    @apply card-pika transition-all duration-200 hover:shadow-brand-lg hover:-translate-y-0.5;
+  }
+
+  /* Input Fields */
+  .input-pika {
+    @apply flex h-11 w-full rounded-brand-md border border-border bg-transparent px-3 py-2 text-sm ring-offset-background transition-all placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-brand-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-brand-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-brand-md active:scale-95 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-brand-md bg-secondary px-4 py-2.5 text-sm font-semibold text-secondary-foreground transition-all duration-200 hover:bg-secondary/80 active:scale-95 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-brand-md px-4 py-2.5 text-sm font-semibold transition-all duration-200 hover:bg-accent hover:text-accent-foreground active:scale-95 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  /* Badge System */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-brand-success/10 text-brand-success;
+  }
+
+  .badge-warning {
+    @apply badge bg-brand-warning/10 text-brand-warning;
+  }
+
+  .badge-danger {
+    @apply badge bg-brand-danger/10 text-brand-danger;
+  }
+
+  .badge-brand {
+    @apply badge bg-brand-electric/10 text-brand-electric;
+  }
+}
+
+/* ============================================
+   MICRO-INTERACTIONS
+   ============================================ */
+
+@layer components {
+  /* Payment Animations */
+  .payment-success {
+    @apply animate-success-bounce;
+  }
+
+  .payment-fly-in {
+    @apply animate-fly-in;
+  }
+
+  .payment-fly-out {
+    @apply animate-fly-out;
+  }
+
+  /* Loading States */
+  .skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  .skeleton-text {
+    @apply skeleton h-4 w-full;
+  }
+
+  .skeleton-circle {
+    @apply skeleton rounded-full;
+  }
+
+  /* Shimmer Effect */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    @apply animate-shimmer;
+  }
+
+  /* Hover Effects */
+  .hover-lift {
+    @apply transition-transform duration-200 hover:-translate-y-1;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-200 hover:shadow-glow-md;
+  }
+
+  /* Focus States */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+
+  /* Ripple Effect */
+  .ripple {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ripple::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, hsl(var(--primary) / 0.3) 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform 0.5s, opacity 1s;
+  }
+
+  .ripple:active::after {
+    transform: scale(0, 0);
+    opacity: 0.3;
+    transition: 0s;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+@layer utilities {
+  /* Glassmorphism */
+  .glass {
+    @apply backdrop-blur-md bg-background/80 border border-border/50;
+  }
+
+  /* Gradient Text */
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-electric to-brand-trust bg-clip-text text-transparent;
+  }
+
+  /* Glow Effects */
+  .glow-sm {
+    @apply shadow-glow-sm;
+  }
+
+  .glow-md {
+    @apply shadow-glow-md;
+  }
+
+  .glow-lg {
+    @apply shadow-glow-lg;
+  }
+
+  /* Aspect Ratios */
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
+
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+
+  .aspect-payment {
+    aspect-ratio: 1.586 / 1; /* Standard credit card ratio */
+  }
+
+  /* Scrollbar Styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+/* ============================================
+   ANIMATIONS & TRANSITIONS
+   ============================================ */
+
+@layer utilities {
+  /* Page Transitions */
+  .page-enter {
+    @apply animate-fade-in;
+  }
+
+  .page-exit {
+    @apply opacity-0;
+  }
+
+  /* List Item Animations */
+  .list-item-enter {
+    @apply animate-slide-up;
+  }
+
+  /* Stagger Children */
+  .stagger-1 {
+    animation-delay: 0.1s;
+  }
+
+  .stagger-2 {
+    animation-delay: 0.2s;
+  }
+
+  .stagger-3 {
+    animation-delay: 0.3s;
+  }
+
+  .stagger-4 {
+    animation-delay: 0.4s;
+  }
+}
+
+/* ============================================
+   SPECIAL COMPONENTS
+   ============================================ */
+
+/* Credit Card Pattern */
+.card-pattern {
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 0%, transparent 20%);
+}
+
+/* Payment Status Indicators */
+.status-dot {
+  @apply h-2 w-2 rounded-full;
+}
+
+.status-dot-success {
+  @apply status-dot bg-brand-success animate-pulse;
+}
+
+.status-dot-pending {
+  @apply status-dot bg-brand-warning animate-pulse;
+}
+
+.status-dot-error {
+  @apply status-dot bg-brand-danger;
+}
+
+/* Number Formatting */
+.amount-display {
+  @apply font-mono-number font-semibold tracking-tight;
+}
+
+.amount-positive {
+  @apply amount-display text-brand-success;
+}
+
+.amount-negative {
+  @apply amount-display text-foreground;
+}
+
+/* Responsive Text */
+.text-responsive {
+  @apply text-lg sm:text-xl lg:text-2xl;
+}

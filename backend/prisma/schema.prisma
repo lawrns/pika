@@ -1,0 +1,465 @@
+// Prisma Schema for Pika
+// Payment Links & QR Code Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USERS & AUTHENTICATION
+// ============================================
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  emailVerified   DateTime?
+  phone           String?
+  phoneVerified   Boolean   @default(false)
+  
+  name            String
+  businessName    String?
+  avatar          String?
+  
+  role            UserRole  @default(MERCHANT)
+  
+  // Business Details
+  rfc             String?   @unique // Mexican Tax ID
+  taxId           String?
+  businessType    BusinessType?
+  industry        String?
+  
+  // Preferences
+  currency        String    @default("MXN")
+  language        String    @default("es")
+  timezone        String    @default("America/Mexico_City")
+  
+  // Notifications
+  emailNotifications Boolean @default(true)
+  smsNotifications   Boolean @default(false)
+  
+  fcmToken        String?
+  lastLoginAt     DateTime?
+  isActive        Boolean   @default(true)
+  isOnboarded     Boolean   @default(false)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  accounts        Account[]
+  sessions        Session[]
+  wallet          Wallet?
+  transactions    Transaction[]
+  paymentLinks    PaymentLink[]
+  qrCodes         QrCode[]
+  
+  @@index([email])
+  @@index([phone])
+  @@index([rfc])
+  @@index([role])
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("users")
+}
+
+enum UserRole {
+  MERCHANT
+  CUSTOMER
+  ADMIN
+}
+
+enum BusinessType {
+  INDIVIDUAL
+  CORPORATION
+  NON_PROFIT
+  GOVERNMENT
+}
+
+// ============================================
+// AUTHENTICATION (NextAuth compatible)
+// ============================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([sessionToken])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================
+// WALLETS
+// ============================================
+
+model Wallet {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  
+  balance         Int       @default(0)
+  currency        String    @default("MXN")
+  
+  // Limits
+  dailyLimit      Int?      // Daily transaction limit in cents
+  monthlyLimit    Int?      // Monthly transaction limit in cents
+  dailyUsed       Int       @default(0)
+  monthlyUsed     Int       @default(0)
+  lastResetAt     DateTime  @default(now())
+  
+  // Status
+  isActive        Boolean   @default(true)
+  isFrozen        Boolean   @default(false)
+  frozenReason    String?
+  frozenAt        DateTime?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([isActive])
+  @@map("wallets")
+}
+
+// ============================================
+// TRANSACTIONS
+// ============================================
+
+model Transaction {
+  id              String          @id @default(cuid())
+  
+  userId          String
+  walletId        String
+  
+  type            TransactionType
+  status          TransactionStatus @default(PENDING)
+  
+  amount          Int             // Amount in cents
+  fee             Int             @default(0)
+  netAmount       Int             // amount - fee
+  
+  currency        String          @default("MXN")
+  
+  description     String?
+  metadata        Json?           // Additional data (product info, etc.)
+  
+  // Payment Details
+  paymentMethod   PaymentMethod?
+  paymentLink     String?
+  qrCodeId        String?         @db.VarChar(255)
+  
+  // Provider Info
+  provider        PaymentProvider?
+  providerTxId    String?         @db.VarChar(255)
+  providerUrl     String?
+  
+  // Processor Info
+  processorFee    Int             @default(0)
+  processorFeePercent Float?      // Fee percentage applied
+  
+  // Refund Info
+  originalTxId    String?         @db.VarChar(255) // If this is a refund
+  refundReason    String?
+  
+  // Timestamps
+  completedAt     DateTime?
+  failedAt        DateTime?
+  refundedAt      DateTime?
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([walletId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@index([providerTxId])
+  @@index([qrCodeId])
+  @@map("transactions")
+}
+
+enum TransactionType {
+  PAYMENT
+  REFUND
+  WITHDRAWAL
+  DEPOSIT
+  TRANSFER
+  FEE
+  CHARGEBACK
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CARD
+  SPEI
+  OXXO
+  CASH
+  TRANSFER
+  WALLET
+}
+
+enum PaymentProvider {
+  STRIPE
+  MERCADO_PAGO
+    SPEI
+  CASH
+  WALLET
+}
+
+// ============================================
+// PAYMENT LINKS
+// ============================================
+
+model PaymentLink {
+  id              String          @id @default(cuid())
+  
+  userId          String
+  
+  // Link Details
+  title           String
+  description     String?
+  
+  amount          Int             // Amount in cents (0 = flexible amount)
+  currency        String          @default("MXN")
+  
+  // Type & Settings
+  type            PaymentLinkType @default(ONE_TIME)
+  maxUses         Int?            // null = unlimited
+  usedCount       Int             @default(0)
+  
+  // Customer Info
+  collectName     Boolean         @default(false)
+  collectEmail    Boolean         @default(false)
+  collectPhone    Boolean         @default(false)
+  collectAddress  Boolean         @default(false)
+  
+  // Customization
+  logo            String?
+  themeColor      String?         @db.VarChar(7) // Hex color
+  customMessage   String?
+  
+  // Expiration
+  expiresAt       DateTime?
+  isActive        Boolean         @default(true)
+  
+  // Redirect
+  successUrl      String?
+  cancelUrl       String?
+  
+  // Short URL
+  shortCode       String?         @unique
+  slug            String?         @unique
+  
+  // Security
+  requireAuth     Boolean         @default(false)
+  password        String?
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([shortCode])
+  @@index([slug])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@map("payment_links")
+}
+
+enum PaymentLinkType {
+  ONE_TIME
+  RECURRING
+  SUBSCRIPTION
+  DONATION
+  INVOICE
+}
+
+// ============================================
+// QR CODES
+// ============================================
+
+model QrCode {
+  id              String      @id @default(cuid())
+  
+  userId          String
+  
+  // QR Details
+  name            String
+  description     String?
+  
+  amount          Int         // Amount in cents (0 = flexible amount)
+  currency        String      @default("MXN")
+  
+  // Type
+  type            QrCodeType  @default(DYNAMIC)
+  
+  // Content
+  data            String      @db.Text // QR code data (URL, payment info, etc.)
+  format          QrFormat    @default(PNG)
+  size            Int         @default(300) // Image size in pixels
+  
+  // Settings
+  color           String?     @db.VarChar(7) // Hex color
+  backgroundColor String?     @db.VarChar(7)
+  logo            String?     // Custom logo URL
+  
+  // Usage Tracking
+  scanCount       Int         @default(0)
+  lastScannedAt   DateTime?
+  
+  // Dynamic QR specific
+  targetUrl       String?     // Redirect URL for dynamic QRs
+  
+  // Expiration
+  expiresAt       DateTime?
+  isActive        Boolean     @default(true)
+  
+  // Location (optional)
+  location        String?     // Physical location where QR is displayed
+  deviceId        String?     // Device/kiosk ID
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([type])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@index([scanCount])
+  @@map("qr_codes")
+}
+
+enum QrCodeType {
+  STATIC
+  DYNAMIC
+  PAYMENT_REQUEST
+  WITHDRAWAL
+}
+
+enum QrFormat {
+  PNG
+  JPEG
+  SVG
+  PDF
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  
+  type        NotificationType
+  title       String
+  message     String   @db.Text
+  data        Json?
+  
+  read        Boolean  @default(false)
+  readAt      DateTime?
+  
+  actionUrl   String?
+  actionLabel String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  PAYMENT_RECEIVED
+  PAYMENT_FAILED
+  WITHDRAWAL_COMPLETE
+  WITHDRAWAL_FAILED
+  REFUND_ISSUED
+  LINK_CREATED
+  QR_SCANNED
+  LINK_EXPIRED
+  LOW_BALANCE
+  MONTHLY_SUMMARY
+  SYSTEM
+}
+
+// ============================================
+// WEBHOOK LOGS
+// ============================================
+
+model WebhookLog {
+  id          String   @id @default(cuid())
+  
+  event       String   // Payment succeeded, refund.created, etc.
+  provider    PaymentProvider?
+  
+  payload     Json
+  processed   Boolean  @default(false)
+  
+  httpStatus  Int?
+  response    String?  @db.Text
+  error       String?  @db.Text
+  
+  receivedAt  DateTime @default(now())
+  processedAt DateTime?
+  
+  @@index([event])
+  @@index([provider])
+  @@index([processed])
+  @@index([receivedAt])
+  @@map("webhook_logs")
+}
