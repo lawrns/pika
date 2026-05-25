@@ -46,7 +46,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/pay/:referenceCode" element={<PublicPayPage />} />
-        <Route path="/dashboard" element={
+        <Route path="/dashboard/*" element={
           <ProtectedRoute>
             <DashboardLayout>
               <Routes>
