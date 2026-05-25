@@ -1,65 +1,67 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import LandingPage from './components/pages/LandingPage';
-import DashboardOverviewPage from './components/pages/DashboardOverviewPage';
-import CreateRequestPage from './components/pages/CreateRequestPage';
-import PublicPayerPage from './components/pages/PublicPayerPage';
-import ConfirmationPage from './components/pages/ConfirmationPage';
-import { DesignCanvas, DCSection, DCArtboard } from './components/pika/DesignCanvas';
-import { IphoneFrame } from './components/pika/IphoneFrame';
+import { lazy, Suspense } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { useAppStore } from '@/store'
+import { DashboardLayout } from '@/components/layout/DashboardLayout'
+import { Skeleton } from '@/components/ui/skeleton'
+import { LoginPage } from '@/components/auth/LoginPage'
+import { RegisterPage } from '@/components/auth/RegisterPage'
 
-function AppContent() {
+const DashboardOverviewPage = lazy(() => import('@/components/pages/DashboardOverviewPage').then(m => ({ default: m.default })))
+const WalletPage = lazy(() => import('@/components/pages/WalletPage').then(m => ({ default: m.default })))
+const TransactionsPage = lazy(() => import('@/components/pages/TransactionsPage').then(m => ({ default: m.default })))
+const SendPage = lazy(() => import('@/components/pages/SendPage').then(m => ({ default: m.default })))
+const QRPage = lazy(() => import('@/components/pages/QRPage').then(m => ({ default: m.default })))
+const ContactsPage = lazy(() => import('@/components/pages/ContactsPage').then(m => ({ default: m.default })))
+const SettingsPage = lazy(() => import('@/components/pages/SettingsPage').then(m => ({ default: m.default })))
+const PublicPayPage = lazy(() => import('@/components/pages/PublicPayPage').then(m => ({ default: m.default })))
+
+function PageSkeleton() {
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/app" element={<DashboardOverviewPage />} />
-      <Route path="/app/requests/new" element={<CreateRequestPage />} />
-      <Route path="/p/:slug" element={<PublicPayerPage />} />
-      <Route path="/paid/:paymentId" element={<ConfirmationPage />} />
-      <Route path="/canvas" element={
-        <DesignCanvas minScale={0.2} maxScale={3}>
-          {/* ── SECTION 1: PUBLIC LANDING ── */}
-          <DCSection title="Onboarding & Landing" subtitle="Marketing site and landing presentation">
-            <DCArtboard label="Landing Page (Web Desktop Preview)">
-              <div style={{ width: 1200, height: 720, overflow: 'auto', scale: '0.8', transformOrigin: 'top left' }}>
-                <LandingPage />
-              </div>
-            </DCArtboard>
-          </DCSection>
+    <div className="space-y-6">
+      <Skeleton className="h-8 w-48" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-24" />
+        ))}
+      </div>
+      <Skeleton className="h-64" />
+    </div>
+  )
+}
 
-          {/* ── SECTION 2: REQUESTER DASHBOARD FLOW ── */}
-          <DCSection title="Requester Flows" subtitle="Dashboard, setup checklists, and link creation">
-            <DCArtboard label="1. Requester Dashboard">
-              <IphoneFrame>
-                <DashboardOverviewPage />
-              </IphoneFrame>
-            </DCArtboard>
-            <DCArtboard label="2. Create Request Page">
-              <IphoneFrame>
-                <CreateRequestPage />
-              </IphoneFrame>
-            </DCArtboard>
-          </DCSection>
-
-          {/* ── SECTION 3: PAYER FLOW ── */}
-          <DCSection title="Payer & Confirmation Flow" subtitle="App-optional payment layers, SPEI deep links, and receipts">
-            <DCArtboard label="1. Public Payer Page (/p/r_tac)">
-              <IphoneFrame>
-                <PublicPayerPage />
-              </IphoneFrame>
-            </DCArtboard>
-            <DCArtboard label="2. Confirmation Receipt">
-              <IphoneFrame>
-                <ConfirmationPage />
-              </IphoneFrame>
-            </DCArtboard>
-          </DCSection>
-        </DesignCanvas>
-      } />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user } = useAppStore()
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+  return <>{children}</>
 }
 
 export default function App() {
-  return <AppContent />;
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/pay/:referenceCode" element={<PublicPayPage />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <Routes>
+                <Route index element={<DashboardOverviewPage />} />
+                <Route path="wallet" element={<WalletPage />} />
+                <Route path="transactions" element={<TransactionsPage />} />
+                <Route path="send" element={<SendPage />} />
+                <Route path="qr" element={<QRPage />} />
+                <Route path="contacts" element={<ContactsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Routes>
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </Suspense>
+  )
 }
