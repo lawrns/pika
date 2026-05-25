@@ -18,14 +18,14 @@ export default function DashboardOverviewPage() {
   const loadDashboardData = async () => {
     try {
       // Fetch User profile
-      const userRes = await fetch('http://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/me');
+      const userRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/me');
       if (userRes.ok) {
         const userData = await userRes.json();
         setProfileName(userData.displayName || 'Mariana Báez');
       }
 
       // Fetch Receiving Accounts to check CLABE registration
-      const accountsRes = await fetch('http://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/receiving-accounts');
+      const accountsRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/receiving-accounts');
       if (accountsRes.ok) {
         const accounts = await accountsRes.json();
         const hasClabe = accounts.some((acc: any) => acc.accountType === 'clabe' || acc.accountType === 'dimo_phone');
@@ -33,7 +33,7 @@ export default function DashboardOverviewPage() {
       }
 
       // Fetch Requests
-      const reqsRes = await fetch('http://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/requests');
+      const reqsRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/requests');
       if (reqsRes.ok) {
         const reqs = await reqsRes.json();
         // Filter requests
@@ -86,7 +86,7 @@ export default function DashboardOverviewPage() {
     }
     setRegisteringClabe(true);
     try {
-      const response = await fetch('http://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/receiving-accounts', {
+      const response = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/receiving-accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

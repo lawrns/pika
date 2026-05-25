@@ -14,6 +14,7 @@ const QRPage = lazy(() => import('@/components/pages/QRPage').then(m => ({ defau
 const ContactsPage = lazy(() => import('@/components/pages/ContactsPage').then(m => ({ default: m.default })))
 const SettingsPage = lazy(() => import('@/components/pages/SettingsPage').then(m => ({ default: m.default })))
 const PublicPayPage = lazy(() => import('@/components/pages/PublicPayPage').then(m => ({ default: m.default })))
+const LandingPage = lazy(() => import('@/components/pages/LandingPage').then(m => ({ default: m.default })))
 
 function PageSkeleton() {
   return (
@@ -41,7 +42,7 @@ export default function App() {
   return (
     <Suspense fallback={<PageSkeleton />}>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/pay/:referenceCode" element={<PublicPayPage />} />

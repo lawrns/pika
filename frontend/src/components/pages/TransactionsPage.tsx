@@ -1,311 +1,294 @@
-import { useState, useMemo } from 'react'
-import { useAppStore } from '@/store'
-import type { Transaction } from '@/store/types'
-import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import { TransactionDetailsModal } from '@/components/transactions/TransactionDetailsModal'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { EmptyState } from '@/components/ui/empty-state'
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { useToast } from '@/components/ui/use-toast'
-import { transactionsApi } from '@/lib/api'
+import { useState, useMemo } from 'react';
+import { useAppStore } from '@/store';
+import type { Transaction } from '@/store/types';
+import { TransactionDetailsModal } from '@/components/transactions/TransactionDetailsModal';
+import { useToast } from '@/components/ui/use-toast';
+import { transactionsApi } from '@/lib/api';
+import { fmtMXN } from '../pika/atoms';
 import { 
   Search, Download, ArrowUpRight, ArrowDownLeft, 
-  ArrowLeftRight, FileText, Loader2, X
-} from 'lucide-react'
-
-function formatCurrency(amount: number, currency: string = 'MXN') {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-  }).format(amount)
-}
+  ArrowLeftRight, FileText, Loader2, X, Filter
+} from 'lucide-react';
 
 function formatDate(dateString: string) {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Yesterday'
-  if (days < 7) return `${days} days ago`
+  if (days === 0) return 'Hoy';
+  if (days === 1) return 'Ayer';
+  if (days < 7) return `Hace ${days} días`;
   
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return date.toLocaleDateString('es-MX', { month: 'short', day: 'numeric' });
 }
 
 function getStatusBadge(status: string) {
   const variants: Record<string, string> = {
-    completed: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
-    pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
-    failed: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-  }
-  return variants[status] || 'bg-gray-100 text-gray-700'
+    completed: 'bg-[#DDF8E7] text-[#22A952]',
+    pending: 'bg-[#FFF2BF] text-[#FF7A3D]',
+    failed: 'bg-red-50 text-red-500'
+  };
+  return variants[status] || 'bg-neutral-100 text-neutral-500';
+}
+
+function getStatusLabel(status: string) {
+  const labels: Record<string, string> = {
+    completed: 'Exitoso',
+    pending: 'Pendiente',
+    failed: 'Fallido'
+  };
+  return labels[status] || status;
 }
 
 function getTypeIcon(type: string) {
   const icons: Record<string, React.ReactNode> = {
-    incoming: <ArrowDownLeft className="h-4 w-4 text-green-500" />,
+    incoming: <ArrowDownLeft className="h-4 w-4 text-[#22A952]" />,
     outgoing: <ArrowUpRight className="h-4 w-4 text-red-500" />,
     transfer: <ArrowLeftRight className="h-4 w-4 text-blue-500" />,
-    payment: <FileText className="h-4 w-4 text-purple-500" />
-  }
-  return icons[type] || <FileText className="h-4 w-4" />
+    payment: <FileText className="h-4 w-4 text-[#7B2FF2]" />
+  };
+  return icons[type] || <FileText className="h-4 w-4" />;
 }
 
 function getTypeColor(type: string) {
   const colors: Record<string, string> = {
-    incoming: 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300',
-    outgoing: 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300',
-    transfer: 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300',
-    payment: 'bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300'
-  }
-  return colors[type] || 'bg-gray-100 text-gray-600'
+    incoming: 'bg-[#DDF8E7] text-[#22A952]',
+    outgoing: 'bg-red-50 text-red-500',
+    transfer: 'bg-blue-50 text-blue-500',
+    payment: 'bg-[#EFE4FF] text-[#7B2FF2]'
+  };
+  return colors[type] || 'bg-neutral-100 text-neutral-500';
 }
 
 export default function TransactionsPage() {
-  const { transactions } = useAppStore()
-  const { toast } = useToast()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({})
-  const [isExporting, setIsExporting] = useState(false)
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const { transactions } = useAppStore();
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [dateRange, setDateRange] = useState<{ start?: string; end?: string }>({});
+  const [isExporting, setIsExporting] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
       const matchesSearch = !searchQuery || 
         t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.from?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.to?.toLowerCase().includes(searchQuery.toLowerCase())
+        t.to?.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesStatus = statusFilter === 'all' || t.status === statusFilter
+      const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
       
       const matchesDate = (!dateRange.start || new Date(t.date) >= new Date(dateRange.start)) &&
-                         (!dateRange.end || new Date(t.date) <= new Date(dateRange.end))
+                         (!dateRange.end || new Date(t.date) <= new Date(dateRange.end));
       
-      return matchesSearch && matchesStatus && matchesDate
-    })
-  }, [transactions, searchQuery, statusFilter, dateRange])
+      return matchesSearch && matchesStatus && matchesDate;
+    });
+  }, [transactions, searchQuery, statusFilter, dateRange]);
 
   const groupedTransactions = useMemo(() => {
-    const groups: Record<string, Transaction[]> = {}
+    const groups: Record<string, Transaction[]> = {};
     
     filteredTransactions.forEach(t => {
-      const date = new Date(t.date)
-      const key = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-      if (!groups[key]) groups[key] = []
-      groups[key].push(t)
-    })
+      const date = new Date(t.date);
+      const key = date.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
+      const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+      if (!groups[capitalizedKey]) groups[capitalizedKey] = [];
+      groups[capitalizedKey].push(t);
+    });
     
-    return groups
-  }, [filteredTransactions])
+    return groups;
+  }, [filteredTransactions]);
 
   const stats = useMemo(() => {
     const income = filteredTransactions
       .filter(t => t.type === 'incoming')
-      .reduce((sum, t) => sum + t.amount, 0)
+      .reduce((sum, t) => sum + t.amount, 0);
     const expenses = filteredTransactions
       .filter(t => t.type === 'outgoing')
-      .reduce((sum, t) => sum + t.amount, 0)
-    return { income, expenses }
-  }, [filteredTransactions])
+      .reduce((sum, t) => sum + t.amount, 0);
+    return { income, expenses };
+  }, [filteredTransactions]);
 
   const handleExport = async (format: 'csv' | 'pdf') => {
-    setIsExporting(true)
-    const result = await transactionsApi.export(format, dateRange)
+    setIsExporting(true);
+    const result = await transactionsApi.export(format, dateRange);
     
     if (result.data) {
-      const link = document.createElement('a')
-      link.href = result.data.url
-      link.download = result.data.filename
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      const link = document.createElement('a');
+      link.href = result.data.url;
+      link.download = result.data.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       
-      toast({ title: `Transactions exported as ${format.toUpperCase()}` })
+      toast({ title: `Transacciones exportadas como ${format.toUpperCase()} ⚡` });
     } else {
-      toast({ title: result.error || 'Export failed', variant: 'destructive' })
+      toast({ title: result.error || 'Fallo al exportar transacciones', variant: 'destructive' });
     }
-    setIsExporting(false)
-  }
+    setIsExporting(false);
+  };
 
   const handleTransactionClick = (transaction: Transaction) => {
-    setSelectedTransaction(transaction)
-    setIsDetailsOpen(true)
-  }
+    setSelectedTransaction(transaction);
+    setIsDetailsOpen(true);
+  };
 
   const clearFilters = () => {
-    setSearchQuery('')
-    setStatusFilter('all')
-    setDateRange({})
-  }
+    setSearchQuery('');
+    setStatusFilter('all');
+    setDateRange({});
+  };
 
-  const hasFilters = searchQuery || statusFilter !== 'all' || dateRange.start || dateRange.end
+  const hasFilters = searchQuery || statusFilter !== 'all' || dateRange.start || dateRange.end;
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
-            <p className="text-muted-foreground">
-              View and manage your transaction history
+    <div className="space-y-8 animate-fade-in max-w-4xl mx-auto pb-12">
+      {/* ── HEADER ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black font-display text-neutral-800 tracking-tight">Transacciones</h1>
+          <p className="text-neutral-500 font-semibold text-sm mt-1">
+            Consulta el historial completo de tus cobros y retiros SPEI
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleExport('pdf')}
+            disabled={isExporting}
+            className="px-5 py-2.5 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 font-bold rounded-full text-xs shadow-sm flex items-center gap-1.5 transition-all active:scale-95 disabled:opacity-50"
+          >
+            {isExporting ? <Loader2 className="h-4 w-4 animate-spin text-neutral-400" /> : <Download className="h-4 w-4 text-neutral-500" />}
+            Exportar PDF
+          </button>
+        </div>
+      </div>
+
+      {/* ── STATS BLOCK ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="bg-white border border-black/5 rounded-[28px] p-5 shadow-sm">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Ingresos</span>
+          <span className="text-xl font-black font-display text-[#22A952]">+{fmtMXN(stats.income)}</span>
+        </div>
+        <div className="bg-white border border-black/5 rounded-[28px] p-5 shadow-sm">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Egresos</span>
+          <span className="text-xl font-black font-display text-neutral-600">-{fmtMXN(stats.expenses)}</span>
+        </div>
+        <div className="bg-white border border-black/5 rounded-[28px] p-5 shadow-sm">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Monto Neto</span>
+          <span className={`text-xl font-black font-display ${stats.income - stats.expenses >= 0 ? 'text-[#22A952]' : 'text-red-500'}`}>
+            {fmtMXN(stats.income - stats.expenses)}
+          </span>
+        </div>
+      </div>
+
+      {/* ── FILTERS PANEL ── */}
+      <div className="bg-white border border-black/5 rounded-3xl p-4 shadow-sm flex flex-col md:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+          <input
+            placeholder="Buscar por concepto o destinatario..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 bg-neutral-50 hover:bg-neutral-100/50 border border-neutral-200 rounded-full text-xs font-semibold outline-none transition-all placeholder:text-neutral-400"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2 items-center">
+          <div className="relative flex items-center">
+            <Filter className="absolute left-3 h-3.5 w-3.5 text-neutral-400" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="pl-8 pr-4 py-2.5 bg-neutral-50 hover:bg-neutral-100/50 border border-neutral-200 rounded-full text-xs font-bold outline-none cursor-pointer transition-all appearance-none"
+            >
+              <option value="all">Todos los estados</option>
+              <option value="completed">Exitosos</option>
+              <option value="pending">Pendientes</option>
+              <option value="failed">Fallidos</option>
+            </select>
+          </div>
+          <input
+            type="date"
+            value={dateRange.start || ''}
+            onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+            className="px-4 py-2 bg-neutral-50 hover:bg-neutral-100/50 border border-neutral-200 rounded-full text-xs font-bold outline-none cursor-pointer"
+          />
+          {hasFilters && (
+            <button
+              onClick={clearFilters}
+              className="w-8 h-8 rounded-full border border-neutral-200 bg-neutral-50 hover:bg-neutral-100 flex items-center justify-center text-neutral-500 transition-all active:scale-90"
+              title="Limpiar filtros"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── LIST PANEL ── */}
+      <div className="bg-white border border-black/5 rounded-[32px] p-6 md:p-8 shadow-sm">
+        {filteredTransactions.length === 0 ? (
+          <div className="text-center py-12 text-neutral-400 flex flex-col items-center">
+            <FileText className="w-12 h-12 text-neutral-300 mb-3" />
+            <h4 className="text-sm font-extrabold text-neutral-700">No encontramos transacciones</h4>
+            <p className="text-xs text-neutral-400 max-w-xs mt-1">
+              {hasFilters ? 'Prueba ajustando los filtros de búsqueda o fechas.' : 'Tus cobros completados aparecerán aquí.'}
             </p>
-          </div>
-          <div className="flex gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" disabled={isExporting}>
-                  {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-                  Export
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleExport('csv')}>
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExport('pdf')}>
-                  Export as PDF
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Income</p>
-              <p className="text-2xl font-bold text-green-600">+{formatCurrency(stats.income)}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Expenses</p>
-              <p className="text-2xl font-bold text-red-600">-{formatCurrency(stats.expenses)}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Net</p>
-              <p className={`text-2xl font-bold ${stats.income - stats.expenses >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(stats.income - stats.expenses)}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Transactions</p>
-              <p className="text-2xl font-bold">{filteredTransactions.length}</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search transactions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex gap-2">
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 border rounded-md bg-background text-sm"
-                >
-                  <option value="all">All Status</option>
-                  <option value="completed">Completed</option>
-                  <option value="pending">Pending</option>
-                  <option value="failed">Failed</option>
-                </select>
-                <Input
-                  type="date"
-                  value={dateRange.start || ''}
-                  onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                  className="w-auto"
-                />
-                {hasFilters && (
-                  <Button variant="ghost" size="icon" onClick={clearFilters}>
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction History</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {filteredTransactions.length === 0 ? (
-              <EmptyState
-                icon={FileText}
-                title="No transactions found"
-                description={hasFilters ? 'Try adjusting your filters' : 'Your transactions will appear here'}
-                action={hasFilters ? (
-                  <Button variant="outline" onClick={clearFilters}>Clear Filters</Button>
-                ) : undefined}
-              />
-            ) : (
-              <div className="space-y-6">
-                {Object.entries(groupedTransactions).map(([month, txs]) => (
-                  <div key={month}>
-                    <h3 className="text-sm font-semibold text-muted-foreground mb-3 sticky top-0 bg-card py-2">
-                      {month}
-                    </h3>
-                    <div className="space-y-2">
-                      {txs.map((transaction) => (
-                        <div
-                          key={transaction.id}
-                          onClick={() => handleTransactionClick(transaction)}
-                          className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getTypeColor(transaction.type)}`}>
-                              {getTypeIcon(transaction.type)}
-                            </div>
-                            <div>
-                              <p className="font-medium text-sm">{transaction.description}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {transaction.from || transaction.to} • {formatDate(transaction.date)}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right flex items-center gap-3">
-                            <div>
-                              <p className={`font-semibold text-sm ${transaction.type === 'incoming' ? 'text-green-600' : 'text-foreground'}`}>
-                                {transaction.type === 'incoming' ? '+' : '-'}
-                                {formatCurrency(transaction.amount)}
-                              </p>
-                              <Badge className={getStatusBadge(transaction.status)}>
-                                {transaction.status}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {hasFilters && (
+              <button
+                onClick={clearFilters}
+                className="mt-4 px-5 py-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-bold rounded-full text-xs transition-all active:scale-95"
+              >
+                Limpiar filtros
+              </button>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {Object.entries(groupedTransactions).map(([month, txs]) => (
+              <div key={month} className="space-y-3">
+                <h3 className="text-xs font-extrabold text-neutral-400 uppercase tracking-wider px-1">
+                  {month}
+                </h3>
+                <div className="divide-y divide-neutral-100 bg-neutral-50/20 border border-neutral-100 rounded-2xl overflow-hidden">
+                  {txs.map((transaction) => (
+                    <div
+                      key={transaction.id}
+                      onClick={() => handleTransactionClick(transaction)}
+                      className="flex items-center justify-between p-4 hover:bg-neutral-50 transition-colors cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${getTypeColor(transaction.type)}`}>
+                          {getTypeIcon(transaction.type)}
+                        </div>
+                        <div>
+                          <p className="font-extrabold text-sm text-neutral-800 group-hover:text-[#7B2FF2] transition-colors">
+                            {transaction.description}
+                          </p>
+                          <p className="text-xs text-neutral-400 font-semibold mt-0.5">
+                            {transaction.from || transaction.to} • {formatDate(transaction.date)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right flex items-center gap-3">
+                        <div className="space-y-1">
+                          <p className={`font-black font-display text-sm ${transaction.type === 'incoming' ? 'text-[#22A952]' : 'text-neutral-800'}`}>
+                            {transaction.type === 'incoming' ? '+' : '-'}
+                            {fmtMXN(transaction.amount)}
+                          </p>
+                          <span className={`inline-block text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${getStatusBadge(transaction.status)}`}>
+                            {getStatusLabel(transaction.status)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <TransactionDetailsModal
@@ -313,6 +296,6 @@ export default function TransactionsPage() {
         open={isDetailsOpen}
         onOpenChange={setIsDetailsOpen}
       />
-    </DashboardLayout>
-  )
+    </div>
+  );
 }

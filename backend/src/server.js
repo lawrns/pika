@@ -17,6 +17,7 @@ import {
 } from './middleware/securityHeaders.js';
 
 import v1Routes from './routes/v1.js';
+import authRoutes from './routes/auth.js';
 
 dotenv.config();
 
@@ -109,6 +110,8 @@ app.get('/health', async (req, res) => {
 });
 
 // API routes with security middleware
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/v1', v1Routes);
 app.use('/', v1Routes); // Support /webhooks directly
 
