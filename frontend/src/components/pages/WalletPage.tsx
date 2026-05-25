@@ -13,7 +13,7 @@ import {
   Banknote, Clock, AlertCircle, Plus, Minus, Loader2
 } from 'lucide-react'
 
-function formatCurrency(amount: number, currency: string = 'USD') {
+function formatCurrency(amount: number, currency: string = 'MXN') {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currency,

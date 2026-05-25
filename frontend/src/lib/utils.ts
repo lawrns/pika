@@ -12,10 +12,10 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Format currency with proper formatting
  * @param amount - Amount in dollars
- * @param currency - Currency code (default: USD)
+ * @param currency - Currency code (default: MXN)
  * @returns Formatted currency string
  */
-export function formatCurrency(amount: number, currency: string = 'USD'): string {
+export function formatCurrency(amount: number, currency: string = 'MXN'): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,

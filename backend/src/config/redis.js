@@ -31,17 +31,28 @@ try {
   redisClient = null;
 }
 
-// Connect to Redis
+// Connect to Redis. node-redis connect() is not idempotent; calling it again
+// after startup throws "Socket already opened" and polluted production logs from
+// every /health request. Treat an already-open socket as healthy.
 export async function connectRedis() {
   if (!redisClient) {
     console.warn('⚠️  Redis not configured, continuing without caching');
-    return;
+    return false;
+  }
+
+  if (redisClient.isOpen) {
+    redisAvailable = true;
+    return true;
   }
 
   try {
     await redisClient.connect();
+    redisAvailable = true;
+    return true;
   } catch (error) {
+    redisAvailable = false;
     console.warn('⚠️  Redis connection failed, continuing without caching');
+    return false;
   }
 }
 

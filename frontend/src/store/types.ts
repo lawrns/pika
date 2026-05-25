@@ -4,6 +4,7 @@ export interface User {
   email: string
   avatar?: string
   phone?: string
+  isVerified?: boolean
 }
 
 export interface Wallet {
@@ -51,4 +52,22 @@ export interface AppSettings {
   smsNotifications: boolean
   marketingEmails: boolean
   twoFactorEnabled: boolean
+}
+
+
+export interface PaymentLink {
+  id: string
+  referenceCode: string
+  amount: number
+  currency: string
+  description?: string
+  status: string
+  expiresAt?: string
+  paymentUrl: string
+  qrCode?: string
+  createdAt?: string
+}
+
+export interface PublicPaymentLink extends PaymentLink {
+  merchantName: string
 }

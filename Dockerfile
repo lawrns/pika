@@ -1,14 +1,20 @@
 # PIKA - Production Dockerfile
-FROM node:20-alpine AS base
+FROM node:20-slim AS base
+
+# Install system deps
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package files from backend
 COPY backend/package*.json ./
-RUN npm ci --only=production
+RUN npm ci --include=prod
+
+# Copy prisma schema for client generation
+COPY backend/prisma ./prisma
+RUN npx prisma generate --schema=./prisma/schema.prisma
 
 # Production image
 FROM base AS runner
@@ -20,9 +26,10 @@ ENV PORT=8080
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 pika
 
-# Copy backend source
+# Copy backend source and generated prisma client
 COPY --chown=pika:nodejs ./backend ./backend
 COPY --from=deps --chown=pika:nodejs /app/node_modules ./backend/node_modules
+COPY --from=deps --chown=pika:nodejs /app/prisma ./backend/prisma
 
 USER pika
 
@@ -32,7 +39,7 @@ ENV PORT=8080
 ENV HOSTNAME="0.0.0.0"
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 \
   CMD node -e "require('http').get('http://localhost:8080/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"
 
-CMD ["node", "backend/src/server.js"]
+CMD ["sh", "/app/backend/start.sh"]

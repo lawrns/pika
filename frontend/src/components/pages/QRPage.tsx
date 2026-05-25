@@ -18,7 +18,7 @@ import QRCodeLib from 'qrcode'
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'MXN',
   }).format(amount)
 }
 
@@ -71,10 +71,12 @@ export default function QRPage() {
     )
     
     if (result.data) {
-      setQrExpiry(result.data.expiresAt)
+      const qrResult = result.data
+      setQrExpiry(qrResult.expiresAt)
       
       if (canvasRef.current) {
-        await QRCodeLib.toCanvas(canvasRef.current, result.data.qrData, {
+        const qrPayload = qrResult.qrData
+        await QRCodeLib.toCanvas(canvasRef.current, qrPayload, {
           width: 280,
           margin: 2,
           color: {
@@ -90,7 +92,7 @@ export default function QRPage() {
         amount: amount || 0,
         description: qrDescription,
         createdAt: new Date().toISOString(),
-        expiresAt: result.data.expiresAt
+        expiresAt: qrResult.expiresAt
       }, ...prev])
       
       toast({ title: 'QR Code generated!' })

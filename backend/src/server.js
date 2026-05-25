@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { connectRedis } from './config/redis.js';
 import pool from './config/database.js';
 import securityConfig from './config/security.js';
+import { assertEnvironment } from './config/env.js';
 import {
   pciComplianceHeaders,
   paymentSecurityHeaders,
@@ -27,6 +28,9 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// Coolify/Traefik terminates proxy traffic; required for accurate rate-limit IPs.
+app.set('trust proxy', 1);
 
 // Security middleware - PCI DSS compliant
 app.use(requestId);
@@ -89,8 +93,7 @@ app.get('/health', async (req, res) => {
 
     let redisStatus = 'disconnected';
     try {
-      await connectRedis();
-      redisStatus = 'connected';
+      redisStatus = await connectRedis() ? 'connected' : 'error';
     } catch (error) {
       redisStatus = 'error';
     }
@@ -133,6 +136,7 @@ app.use(maskErrorData);
 // Start server
 async function startServer() {
   try {
+    assertEnvironment();
     console.log('🚀 Starting Pika Backend...');
 
     await connectRedis();
@@ -152,6 +156,9 @@ async function startServer() {
   }
 }
 
-startServer();
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
 
+export { startServer };
 export default app;

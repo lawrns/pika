@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useAppStore } from "@/store"
+import { authApi } from "@/lib/api"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 
 export function LoginPage() {
@@ -16,21 +17,19 @@ export function LoginPage() {
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [rememberMe, setRememberMe] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    login({
-      id: "1",
-      name: "Demo User",
-      email: email,
-      avatar: undefined
-    }, "mock-token")
-    
+    setError(null)
+    const result = await authApi.login(email, password)
+    if (result.error || !result.data) {
+      setError(result.error || 'Login failed')
+      setIsLoading(false)
+      return
+    }
+    login(result.data.user, result.data.token)
     setIsLoading(false)
     navigate("/dashboard")
   }
@@ -104,6 +103,7 @@ export function LoginPage() {
               </Link>
             </div>
           </CardContent>
+          {error && <p className="px-6 pb-2 text-sm text-destructive">{error}</p>}
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

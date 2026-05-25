@@ -370,19 +370,19 @@ export default function SettingsPage() {
                     <CardTitle>Notification Preferences</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {[
+                    {([
                       { key: 'emailNotifications', label: 'Email Notifications', desc: 'Receive transaction alerts via email' },
                       { key: 'pushNotifications', label: 'Push Notifications', desc: 'Get instant alerts on your device' },
                       { key: 'smsNotifications', label: 'SMS Notifications', desc: 'Receive important updates via text' },
                       { key: 'marketingEmails', label: 'Marketing Emails', desc: 'Receive promotional content and offers' }
-                    ].map(({ key, label, desc }) => (
+                    ] as Array<{ key: keyof typeof settings; label: string; desc: string }>).map(({ key, label, desc }) => (
                       <div key={key} className="flex items-center justify-between">
                         <div className="space-y-1">
                           <p className="font-medium">{label}</p>
                           <p className="text-sm text-muted-foreground">{desc}</p>
                         </div>
                         <Switch
-                          checked={settings[key] as unknown as boolean[key]}
+                          checked={Boolean(settings[key])}
                           onCheckedChange={(value) => handleNotificationToggle(key, value)}
                         />
                       </div>
