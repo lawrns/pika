@@ -3,7 +3,7 @@ FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy package files from backend
@@ -37,7 +37,7 @@ ENV PORT=8080
 ENV HOSTNAME="0.0.0.0"
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 \
   CMD node -e "require('http').get('http://localhost:8080/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"
 
 CMD ["sh", "/app/backend/start.sh"]
