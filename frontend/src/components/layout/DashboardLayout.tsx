@@ -163,9 +163,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     if (path === '/dashboard/settings') return 'Settings'
     return 'Pika'
   }
+  const isDashboardHome = location.pathname === '/dashboard' || location.pathname === '/dashboard/';
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-[#f7f5fa]">
       <aside className="hidden md:block w-64 shrink-0 border-r bg-background">
         <Sidebar />
       </aside>
@@ -188,12 +189,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </header>
         
-        <main className="flex-1 overflow-auto p-4 md:p-8">
-          <div className="mx-auto max-w-7xl">
+        <main className={cn("flex-1 overflow-auto", !isDashboardHome && "p-4 md:p-8")}>
+          <div className={cn("mx-auto", !isDashboardHome && "max-w-7xl")}>
             {children}
           </div>
         </main>
       </div>
     </div>
-  )
+  );
 }
