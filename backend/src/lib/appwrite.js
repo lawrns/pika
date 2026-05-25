@@ -130,7 +130,6 @@ export const getDatabase = () => {
 
   return mockDbImpl;
 };
-};
 
 export const getStorage = () => {
   if (storage) return storage;
