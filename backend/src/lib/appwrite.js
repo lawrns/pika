@@ -6,7 +6,12 @@ dotenv.config();
 const hasAppwriteCredentials = 
   process.env.APPWRITE_ENDPOINT && 
   process.env.APPWRITE_PROJECT_ID && 
-  process.env.APPWRITE_API_KEY;
+  process.env.APPWRITE_API_KEY &&
+  !process.env.APPWRITE_ENDPOINT.includes('placeholder') &&
+  !process.env.APPWRITE_PROJECT_ID.includes('placeholder') &&
+  !process.env.APPWRITE_API_KEY.includes('placeholder') &&
+  !process.env.APPWRITE_API_KEY.includes('your_appwrite_api_key') &&
+  process.env.APPWRITE_PROJECT_ID !== 'pika-production';
 
 let appwriteClient = null;
 let databases = null;
@@ -47,29 +52,7 @@ if (hasAppwriteCredentials) {
 
 // Unified Database CRUD Helper - resolves to Appwrite or mock fallback
 export const getDatabase = () => {
-  if (databases) {
-    return {
-      isMock: false,
-      listDocuments: async (collectionId, queries = []) => {
-        return databases.listDocuments('pika_main', collectionId, queries);
-      },
-      createDocument: async (collectionId, documentId, data) => {
-        return databases.createDocument('pika_main', collectionId, documentId, data);
-      },
-      getDocument: async (collectionId, documentId) => {
-        return databases.getDocument('pika_main', documentId);
-      },
-      updateDocument: async (collectionId, documentId, data) => {
-        return databases.updateDocument('pika_main', collectionId, documentId, data);
-      },
-      deleteDocument: async (collectionId, documentId) => {
-        return databases.deleteDocument('pika_main', collectionId, documentId);
-      }
-    };
-  }
-
-  // Mock Database Implementation matching Appwrite SDK signatures
-  return {
+  const mockDbImpl = {
     isMock: true,
     listDocuments: async (collectionId) => {
       const docs = Array.from(mockDb[collectionId]?.values() || []);
@@ -98,6 +81,55 @@ export const getDatabase = () => {
       return { success: true };
     }
   };
+
+  if (databases) {
+    return {
+      isMock: false,
+      listDocuments: async (collectionId, queries = []) => {
+        try {
+          return await databases.listDocuments('pika_main', collectionId, queries);
+        } catch (error) {
+          console.warn(`⚠️ Appwrite listDocuments failed, falling back to mock: ${error.message}`);
+          return mockDbImpl.listDocuments(collectionId);
+        }
+      },
+      createDocument: async (collectionId, documentId, data) => {
+        try {
+          return await databases.createDocument('pika_main', collectionId, documentId, data);
+        } catch (error) {
+          console.warn(`⚠️ Appwrite createDocument failed, falling back to mock: ${error.message}`);
+          return mockDbImpl.createDocument(collectionId, documentId, data);
+        }
+      },
+      getDocument: async (collectionId, documentId) => {
+        try {
+          return await databases.getDocument('pika_main', collectionId, documentId);
+        } catch (error) {
+          console.warn(`⚠️ Appwrite getDocument failed, falling back to mock: ${error.message}`);
+          return mockDbImpl.getDocument(collectionId, documentId);
+        }
+      },
+      updateDocument: async (collectionId, documentId, data) => {
+        try {
+          return await databases.updateDocument('pika_main', collectionId, documentId, data);
+        } catch (error) {
+          console.warn(`⚠️ Appwrite updateDocument failed, falling back to mock: ${error.message}`);
+          return mockDbImpl.updateDocument(collectionId, documentId, data);
+        }
+      },
+      deleteDocument: async (collectionId, documentId) => {
+        try {
+          return await databases.deleteDocument('pika_main', collectionId, documentId);
+        } catch (error) {
+          console.warn(`⚠️ Appwrite deleteDocument failed, falling back to mock: ${error.message}`);
+          return mockDbImpl.deleteDocument(collectionId, documentId);
+        }
+      }
+    };
+  }
+
+  return mockDbImpl;
+};
 };
 
 export const getStorage = () => {
