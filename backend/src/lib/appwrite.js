@@ -25,9 +25,13 @@ const mockDb = {
   payment_requests: new Map(),
   request_recipients: new Map(),
   payments: new Map(),
-  ledger_events: [],
+  ledger_events: new Map(),
   webhook_events: new Map(),
-  share_events: [],
+  share_events: new Map(),
+  request_events: new Map(),
+  contacts: new Map(),
+  reminders: new Map(),
+  receipts: new Map(),
   fraud_signals: []
 };
 
