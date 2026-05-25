@@ -1,0 +1,158 @@
+/* ============================================================
+   PIKA — Design tokens
+   Re-cast from the brand reference: warm purple, sunshine yellow,
+   lima green, cream surface. Friendly, confetti-energy.
+   ============================================================ */
+
+:root {
+  /* — Brand —————————————————————————————————————————— */
+  --pika-purple-700: oklch(0.35 0.18 295);
+  --pika-purple-600: oklch(0.45 0.20 295);   /* PRIMARY */
+  --pika-purple-500: oklch(0.55 0.20 295);
+  --pika-purple-400: oklch(0.68 0.16 295);
+  --pika-purple-200: oklch(0.86 0.07 295);
+  --pika-purple-100: oklch(0.94 0.03 295);
+
+  --pika-yellow-500: oklch(0.83 0.16 88);    /* CTA */
+  --pika-yellow-400: oklch(0.88 0.14 88);
+  --pika-yellow-200: oklch(0.94 0.08 88);
+
+  --pika-green-600: oklch(0.55 0.17 145);
+  --pika-green-500: oklch(0.66 0.16 145);    /* SUCCESS / SECONDARY */
+  --pika-green-200: oklch(0.90 0.08 145);
+
+  --pika-coral-500: oklch(0.68 0.18 30);     /* incoming illustration accent */
+  --pika-pink-500:  oklch(0.72 0.18 12);
+  --pika-blue-500:  oklch(0.65 0.15 235);
+  --pika-red-500:   oklch(0.62 0.21 27);     /* danger */
+
+  /* — Surfaces (warm neutrals) ————————————————————————— */
+  --cream:       oklch(0.97 0.01 90);   /* page bg */
+  --cream-2:     oklch(0.94 0.01 90);   /* muted */
+  --paper:       #ffffff;
+  --tinta:       oklch(0.18 0.02 280);  /* primary ink */
+  --tinta-2:     oklch(0.36 0.02 280);  /* secondary text */
+  --tinta-3:     oklch(0.55 0.02 280);  /* tertiary text */
+  --hairline:    oklch(0.88 0.01 280);
+
+  /* — Semantic ————————————————————————————————————————— */
+  --bg:          var(--cream);
+  --fg:          var(--tinta);
+  --primary:     var(--pika-purple-600);
+  --primary-ink: #ffffff;
+  --cta:         var(--pika-yellow-500);
+  --cta-ink:     var(--tinta);
+  --success:     var(--pika-green-500);
+  --danger:      var(--pika-red-500);
+
+  /* — Radius ————————————————————————————————————————— */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* — Shadows ———————————————————————————————————————— */
+  --shadow-sm: 0 1px 2px rgba(40,20,80,.06), 0 2px 6px rgba(40,20,80,.05);
+  --shadow-md: 0 4px 14px rgba(40,20,80,.08), 0 10px 28px rgba(40,20,80,.06);
+  --shadow-lg: 0 16px 40px rgba(40,20,80,.14), 0 4px 12px rgba(40,20,80,.08);
+  --shadow-glow: 0 10px 30px -8px oklch(0.45 0.20 295 / 0.55);
+
+  /* — Type ————————————————————————————————————————— */
+  --font-display: 'Archivo Black', 'Inter', system-ui, sans-serif;
+  --font-ui:      'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── Base ─────────────────────────────────────────────── */
+html, body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); }
+* { box-sizing: border-box; }
+.font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+.font-mono    { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.tnum         { font-variant-numeric: tabular-nums; }
+
+/* ── Buttons ──────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 48px; padding: 0 22px; border: none; cursor: pointer;
+  font-family: var(--font-ui); font-weight: 700; font-size: 15px;
+  border-radius: var(--r-pill); transition: transform .12s ease, box-shadow .15s, background .15s;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px) scale(.985); }
+.btn-cta {
+  background: var(--cta); color: var(--cta-ink);
+  box-shadow: 0 6px 0 oklch(0.74 0.16 78), 0 12px 24px -8px rgba(0,0,0,.18);
+}
+.btn-cta:hover { background: oklch(0.86 0.16 88); }
+.btn-cta:active { box-shadow: 0 2px 0 oklch(0.74 0.16 78), 0 6px 12px -4px rgba(0,0,0,.18); }
+.btn-primary {
+  background: var(--primary); color: var(--primary-ink);
+  box-shadow: var(--shadow-glow);
+}
+.btn-primary:hover { background: var(--pika-purple-700); }
+.btn-success {
+  background: var(--success); color: #06321a;
+  box-shadow: 0 6px 0 oklch(0.50 0.16 145), 0 12px 22px -8px rgba(0,0,0,.18);
+}
+.btn-ghost {
+  background: transparent; color: var(--fg); border: 1.5px solid var(--hairline);
+}
+.btn-ghost:hover { background: rgba(0,0,0,.04); }
+.btn-sm { height: 36px; font-size: 13px; padding: 0 14px; }
+.btn-lg { height: 56px; font-size: 17px; padding: 0 28px; }
+.btn-block { width: 100%; }
+
+/* ── Inputs ───────────────────────────────────────────── */
+.input {
+  display: block; width: 100%; height: 52px;
+  padding: 0 16px; border-radius: var(--r-md);
+  background: var(--paper); border: 1.5px solid var(--hairline);
+  font: inherit; font-size: 15px; color: var(--fg);
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.input:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 4px oklch(0.45 0.20 295 / 0.15);
+}
+.input::placeholder { color: var(--tinta-3); }
+
+/* ── Cards ────────────────────────────────────────────── */
+.card {
+  background: var(--paper); border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm); border: 1px solid oklch(0.92 0.01 280);
+}
+.card-flat { background: var(--paper); border-radius: var(--r-md); border: 1px solid var(--hairline); }
+
+/* ── Badges ───────────────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: var(--r-pill);
+  font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase;
+}
+.badge-success { background: var(--pika-green-200); color: oklch(0.30 0.12 145); }
+.badge-warn    { background: oklch(0.94 0.10 88); color: oklch(0.42 0.13 70); }
+.badge-brand   { background: var(--pika-purple-100); color: var(--pika-purple-700); }
+.badge-danger  { background: oklch(0.93 0.06 27); color: oklch(0.38 0.17 27); }
+
+/* ── Confetti backdrop helper ────────────────────────── */
+.confetti-bg { position: relative; overflow: hidden; }
+.confetti-bg > .__layer { position: absolute; inset: 0; pointer-events: none; }
+
+/* ── Money display ────────────────────────────────────── */
+.amount       { font-family: var(--font-display); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.amount-pos   { color: oklch(0.45 0.16 145); }
+.amount-neg   { color: var(--fg); }
+
+/* ── Avatar ───────────────────────────────────────────── */
+.avatar {
+  width: 44px; height: 44px; border-radius: var(--r-pill);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #fff; font-family: var(--font-ui);
+  background: var(--pika-purple-500);
+}
+
+/* ── Scroll utility ──────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }

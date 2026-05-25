@@ -1,12 +1,12 @@
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
-import { connectRedis } from './config/redis.js';
-import pool from './config/database.js';
 import securityConfig from './config/security.js';
 import { assertEnvironment } from './config/env.js';
+import { connectRedis } from './config/redis.js';
+import { getDatabase } from './lib/appwrite.js';
 import {
   pciComplianceHeaders,
   paymentSecurityHeaders,
@@ -16,13 +16,8 @@ import {
   auditLog
 } from './middleware/securityHeaders.js';
 
+import v1Routes from './routes/v1.js';
 import authRoutes from './routes/auth.js';
-import walletRoutes from './routes/wallet.js';
-import paymentRoutes from './routes/payments.js';
-import qrRoutes from './routes/qr.js';
-import webhookRoutes from './routes/webhooks.js';
-import transactionRoutes from './routes/transactions.js';
-import userRoutes from './routes/users.js';
 
 dotenv.config();
 
@@ -89,7 +84,8 @@ if (securityConfig.audit.logPaymentOperations) {
 // Health check
 app.get('/health', async (req, res) => {
   try {
-    const dbCheck = await pool.query('SELECT NOW()');
+    const db = getDatabase();
+    const dbCheck = await db.listDocuments('users');
 
     let redisStatus = 'disconnected';
     try {
@@ -101,7 +97,7 @@ app.get('/health', async (req, res) => {
     res.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      database: dbCheck ? 'connected' : 'error',
+      database: dbCheck ? (db.isMock ? 'mock-inmemory' : 'appwrite-connected') : 'error',
       redis: redisStatus,
       version: '1.0.0'
     });
@@ -114,13 +110,10 @@ app.get('/health', async (req, res) => {
 });
 
 // API routes with security middleware
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/wallet', walletRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/qr', qrRoutes);
-app.use('/api/transactions', transactionRoutes);
-app.use('/api/users', userRoutes);
-app.use('/webhooks', webhookRoutes); // Webhook handlers
+app.use('/api/v1', v1Routes);
+app.use('/', v1Routes); // Support /webhooks directly
 
 // 404 handler
 app.use((req, res) => {
@@ -141,8 +134,9 @@ async function startServer() {
 
     await connectRedis();
 
-    await pool.query('SELECT NOW()');
-    console.log('✅ Database connected');
+    const db = getDatabase();
+    await db.listDocuments('users');
+    console.log(`✅ Database connected (${db.isMock ? 'mock-inmemory' : 'appwrite'})`);
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log('🚀 Server running');

@@ -1,360 +1,306 @@
-import { useState } from 'react'
-import { useAppStore } from '@/store'
-import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useToast } from '@/components/ui/use-toast'
-import { walletApi } from '@/lib/api'
+import { useState } from 'react';
+import { useAppStore } from '@/store';
+import { fmtMXN } from '../pika/atoms';
+import { useToast } from '@/components/ui/use-toast';
+import { walletApi } from '@/lib/api';
 import { 
   ArrowUpRight, ArrowDownLeft, Wallet, CreditCard, 
-  Banknote, Clock, AlertCircle, Plus, Minus, Loader2
-} from 'lucide-react'
-
-function formatCurrency(amount: number, currency: string = 'MXN') {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-  }).format(amount)
-}
+  Banknote, Clock, AlertCircle, Plus, Minus, Loader2, Landmark, X
+} from 'lucide-react';
 
 export default function WalletPage() {
-  const { wallet, updateBalance, addTransaction } = useAppStore()
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
+  const { wallet, updateBalance, addTransaction } = useAppStore();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   
-  const [isAddFundsOpen, setIsAddFundsOpen] = useState(false)
-  const [addAmount, setAddAmount] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState('card')
+  const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
+  const [addAmount, setAddAmount] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('bank');
 
-  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
-  const [withdrawAmount, setWithdrawAmount] = useState('')
-  const [bankAccount] = useState('**** 4582')
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [bankAccount] = useState('**** 8943');
 
   const handleAddFunds = async () => {
-    const amount = parseFloat(addAmount)
+    const amount = parseFloat(addAmount);
     if (isNaN(amount) || amount <= 0) {
-      toast({ title: 'Please enter a valid amount', variant: 'destructive' })
-      return
+      toast({ title: 'Por favor ingresa un monto válido', variant: 'destructive' });
+      return;
     }
 
-    setIsLoading(true)
-    const result = await walletApi.addFunds(amount, paymentMethod)
+    setIsLoading(true);
+    const result = await walletApi.addFunds(amount, paymentMethod);
     
     if (result.data) {
-      updateBalance(amount)
-      addTransaction(result.data.transaction)
+      updateBalance(amount);
+      addTransaction(result.data.transaction);
       toast({ 
-        title: 'Funds added successfully!',
-        description: `${formatCurrency(amount)} has been added to your wallet`
-      })
-      setIsAddFundsOpen(false)
-      setAddAmount('')
+        title: '¡Fondos agregados!',
+        description: `Se han añadido ${fmtMXN(amount)} a tu cuenta Pika.`
+      });
+      setIsAddFundsOpen(false);
+      setAddAmount('');
     } else {
-      toast({ title: result.error || 'Failed to add funds', variant: 'destructive' })
+      toast({ title: result.error || 'No se pudieron añadir los fondos', variant: 'destructive' });
     }
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   const handleWithdraw = async () => {
-    const amount = parseFloat(withdrawAmount)
+    const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount <= 0) {
-      toast({ title: 'Please enter a valid amount', variant: 'destructive' })
-      return
+      toast({ title: 'Por favor ingresa un monto válido', variant: 'destructive' });
+      return;
     }
 
     if (amount > wallet.balance) {
-      toast({ title: 'Insufficient funds', variant: 'destructive' })
-      return
+      toast({ title: 'Fondos insuficientes en tu balance', variant: 'destructive' });
+      return;
     }
 
-    setIsLoading(true)
-    const result = await walletApi.withdraw(amount, bankAccount)
+    setIsLoading(true);
+    const result = await walletApi.withdraw(amount, bankAccount);
     
     if (result.data) {
-      updateBalance(-amount)
-      addTransaction(result.data.transaction)
+      updateBalance(-amount);
+      addTransaction(result.data.transaction);
       toast({ 
-        title: 'Withdrawal initiated',
-        description: `${formatCurrency(amount)} will be transferred to your bank account`
-      })
-      setIsWithdrawOpen(false)
-      setWithdrawAmount('')
+        title: 'Retiro en proceso ⚡',
+        description: `Se transferirán ${fmtMXN(amount)} a tu cuenta de banco vinculada.`
+      });
+      setIsWithdrawOpen(false);
+      setWithdrawAmount('');
     } else {
-      toast({ title: result.error || 'Failed to withdraw', variant: 'destructive' })
+      toast({ title: result.error || 'No se pudo procesar el retiro', variant: 'destructive' });
     }
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Wallet</h1>
-          <p className="text-muted-foreground">
-            Manage your balance and payment methods
-          </p>
+    <div className="space-y-8 animate-fade-in max-w-4xl mx-auto pb-12">
+      {/* ── HEADER ── */}
+      <div>
+        <h1 className="text-3xl font-black font-display text-neutral-800 tracking-tight">Mi Billetera</h1>
+        <p className="text-neutral-500 font-semibold text-sm mt-1">
+          Gestiona tus fondos y métodos de recepción SPEI / CoDi
+        </p>
+      </div>
+
+      {/* ── CARD HERO ── */}
+      <div className="bg-gradient-to-br from-[#6419D6] via-[#7B2FF2] to-[#4F12B8] text-white rounded-[32px] p-8 relative overflow-hidden shadow-xl border border-[#7B2FF2]/20">
+        <div className="absolute top-0 right-0 p-8 opacity-10">
+          <Wallet className="h-40 w-40" />
+        </div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-white/95 text-xs font-bold uppercase tracking-wider">
+              🛡 Balance Pika MXN
+            </span>
+            <h2 className="text-5xl md:text-6xl font-black font-display tracking-tight leading-none mt-2">
+              {fmtMXN(wallet.balance)}
+            </h2>
+            <p className="text-white/80 text-sm font-semibold mt-2">
+              CLABE SPEI Vinculada • {bankAccount}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button 
+              onClick={() => setIsAddFundsOpen(true)}
+              className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full border border-white/20 shadow-md backdrop-blur transition-all active:scale-95 flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4 stroke-[3]" />
+              Añadir fondos
+            </button>
+            <button 
+              onClick={() => setIsWithdrawOpen(true)}
+              className="px-6 py-3.5 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+            >
+              <Minus className="h-4 w-4 stroke-[3]" />
+              Retirar SPEI
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── METRICS GRID ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="bg-white border border-black/5 rounded-[28px] p-6 shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-xs font-bold text-neutral-400 block mb-1">Cobrado este mes</span>
+            <span className="text-2xl font-black font-display text-[#22A952]">+{fmtMXN(3890)}</span>
+          </div>
+          <span className="w-12 h-12 rounded-2xl bg-[#DDF8E7] text-[#22A952] flex items-center justify-center">
+            <ArrowDownLeft className="h-6 w-6 stroke-[2.5]" />
+          </span>
+        </div>
+        
+        <div className="bg-white border border-black/5 rounded-[28px] p-6 shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-xs font-bold text-neutral-400 block mb-1">Retirado a Banco</span>
+            <span className="text-2xl font-black font-display text-neutral-600">-{fmtMXN(1450)}</span>
+          </div>
+          <span className="w-12 h-12 rounded-2xl bg-neutral-100 text-neutral-500 flex items-center justify-center">
+            <ArrowUpRight className="h-6 w-6 stroke-[2.5]" />
+          </span>
         </div>
 
-        <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground border-0 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-10">
-            <Wallet className="h-32 w-32" />
+        <div className="bg-white border border-black/5 rounded-[28px] p-6 shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-xs font-bold text-neutral-400 block mb-1">Cobros pendientes</span>
+            <span className="text-2xl font-black font-display text-[#FF7A3D]">{fmtMXN(420)}</span>
           </div>
-          <CardContent className="p-8 relative z-10">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <span className="w-12 h-12 rounded-2xl bg-[#FFF2BF] text-[#FF7A3D] flex items-center justify-center">
+            <Clock className="h-6 w-6 stroke-[2.5]" />
+          </span>
+        </div>
+      </div>
+
+      {/* ── ACCOUNTS SECTION ── */}
+      <div className="bg-white border border-black/5 rounded-[32px] p-8 shadow-sm space-y-6">
+        <h3 className="text-lg font-black font-display text-neutral-800 flex items-center gap-2">
+          🏦 Métodos de cobro vinculados
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center justify-between p-5 border border-neutral-100 rounded-2xl bg-neutral-50/50 hover:bg-neutral-50 transition-all">
+            <div className="flex items-center gap-4">
+              <span className="w-12 h-12 rounded-xl bg-[#002F6C] text-white font-bold flex items-center justify-center text-xs">
+                BBVA
+              </span>
               <div>
-                <p className="text-sm opacity-80 mb-1">Total Balance</p>
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                  {formatCurrency(wallet.balance)}
-                </h2>
-                <p className="text-sm opacity-80 mt-2">
-                  {wallet.accountName} • {wallet.accountNumber}
-                </p>
+                <p className="font-extrabold text-sm text-neutral-800">BBVA Bancomer</p>
+                <p className="text-xs text-neutral-400 font-semibold">Cuenta CLABE vinculada • **** 8943</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between p-5 border border-neutral-100 rounded-2xl bg-neutral-50/50 hover:bg-neutral-50 transition-all">
+            <div className="flex items-center gap-4">
+              <span className="w-12 h-12 rounded-xl bg-[#E60000] text-white font-bold flex items-center justify-center text-xs">
+                SAN
+              </span>
+              <div>
+                <p className="font-extrabold text-sm text-neutral-800">Banco Santander</p>
+                <p className="text-xs text-neutral-400 font-semibold">Cuenta de respaldo vinculada • **** 1205</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── ADD FUNDS MODAL ── */}
+      {isAddFundsOpen && (
+        <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm z-50 flex items-center justify-center px-6">
+          <div className="bg-white rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative border border-neutral-100">
+            <button
+              onClick={() => setIsAddFundsOpen(false)}
+              className="absolute right-4 top-4 w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-500 flex items-center justify-center"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <div className="text-center mb-6 flex flex-col items-center">
+              <Landmark className="w-10 h-10 text-[#7B2FF2] mb-2" />
+              <h3 className="text-lg font-black text-neutral-800 mt-2">Añadir Fondos</h3>
+              <p className="text-xs text-neutral-400 mt-1 font-semibold">
+                Deposita a tu balance Pika a través de una transferencia rápida SPEI.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Monto a fondear (MXN)</label>
+                <div className="relative flex items-center">
+                  <span className="text-lg font-bold text-neutral-400 mr-1">$</span>
+                  <input
+                    type="number"
+                    value={addAmount}
+                    onChange={(e) => setAddAmount(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full text-base font-bold outline-none border-none bg-transparent"
+                  />
+                </div>
+              </div>
+              <div className="bg-[#f7f5fa] p-3 rounded-xl text-[11px] text-neutral-500 font-semibold leading-relaxed flex gap-2 items-start">
+                <AlertCircle className="h-4 w-4 text-neutral-400 shrink-0 mt-0.5" />
+                <p>La transferencia SPEI se acreditará de forma inmediata y automática en tu cuenta.</p>
               </div>
               <div className="flex gap-3">
-                <Button 
-                  variant="secondary" 
-                  className="bg-white/20 hover:bg-white/30 text-white border-0"
-                  onClick={() => setIsAddFundsOpen(true)}
+                <button 
+                  onClick={() => setIsAddFundsOpen(false)}
+                  className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 font-bold rounded-full text-xs transition-all"
                 >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Funds
-                </Button>
-                <Button 
-                  variant="secondary" 
-                  className="bg-white/20 hover:bg-white/30 text-white border-0"
-                  onClick={() => setIsWithdrawOpen(true)}
+                  Cancelar
+                </button>
+                <button 
+                  onClick={handleAddFunds}
+                  disabled={!addAmount || isLoading}
+                  className="flex-1 py-3 bg-[#FFC52E] hover:bg-[#FFD65C] disabled:bg-neutral-100 disabled:text-neutral-400 text-[#17102A] font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
                 >
-                  <Minus className="mr-2 h-4 w-4" />
-                  Withdraw
-                </Button>
+                  {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  Fondear ⚡
+                </button>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <ArrowDownLeft className="h-4 w-4 text-green-500" />
-                Income
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-green-600">+$2,450</p>
-              <p className="text-xs text-muted-foreground">This month</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <ArrowUpRight className="h-4 w-4 text-red-500" />
-                Expenses
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-red-600">-$1,230</p>
-              <p className="text-xs text-muted-foreground">This month</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Clock className="h-4 w-4 text-yellow-500" />
-                Pending
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-yellow-600">$120</p>
-              <p className="text-xs text-muted-foreground">2 transactions</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-blue-500" />
-                Cards
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">2</p>
-              <p className="text-xs text-muted-foreground">Linked cards</p>
-            </CardContent>
-          </Card>
+          </div>
         </div>
+      )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Payment Methods</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">
-                  VISA
+      {/* ── WITHDRAW MODAL ── */}
+      {isWithdrawOpen && (
+        <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm z-50 flex items-center justify-center px-6">
+          <div className="bg-white rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative border border-neutral-100">
+            <button
+              onClick={() => setIsWithdrawOpen(false)}
+              className="absolute right-4 top-4 w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-500 flex items-center justify-center"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <div className="text-center mb-6 flex flex-col items-center">
+              <Landmark className="w-10 h-10 text-[#7B2FF2] mb-2" />
+              <h3 className="text-lg font-black text-neutral-800 mt-2">Retirar Fondos SPEI</h3>
+              <p className="text-xs text-neutral-400 mt-1 font-semibold">
+                Retira directo a tu cuenta bancaria vinculada de forma instantánea.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Monto a retirar (MXN)</label>
+                <div className="relative flex items-center">
+                  <span className="text-lg font-bold text-neutral-400 mr-1">$</span>
+                  <input
+                    type="number"
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full text-base font-bold outline-none border-none bg-transparent"
+                  />
                 </div>
-                <div>
-                  <p className="font-medium">Visa ending in 4242</p>
-                  <p className="text-sm text-muted-foreground">Expires 12/25</p>
-                </div>
+                <p className="text-[10px] text-neutral-400 font-bold mt-1.5">
+                  Saldo disponible: {fmtMXN(wallet.balance)}
+                </p>
+              </div>
+              <div className="bg-[#f7f5fa] p-3 rounded-xl text-[11px] text-neutral-500 font-semibold leading-relaxed flex gap-2 items-start">
+                <Clock className="h-4 w-4 text-neutral-400 shrink-0 mt-0.5" />
+                <p>Las transferencias de salida fluyen en tiempo real por el sistema de SPEI Banxico.</p>
+              </div>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setIsWithdrawOpen(false)}
+                  className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 font-bold rounded-full text-xs transition-all"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={handleWithdraw}
+                  disabled={!withdrawAmount || isLoading}
+                  className="flex-1 py-3 bg-[#FFC52E] hover:bg-[#FFD65C] disabled:bg-neutral-100 disabled:text-neutral-400 text-[#17102A] font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
+                >
+                  {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  Retirar ⚡
+                </button>
               </div>
             </div>
-            
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-8 bg-green-600 rounded flex items-center justify-center text-white text-xs font-bold">
-                  CHASE
-                </div>
-                <div>
-                  <p className="font-medium">Chase Bank ****4582</p>
-                  <p className="text-sm text-muted-foreground">Checking Account</p>
-                </div>
-              </div>
-            </div>
-
-            <Button variant="outline" className="w-full">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Payment Method
-            </Button>
-          </CardContent>
-        </Card>
-
-        {isAddFundsOpen && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <Card className="w-full max-w-md">
-              <CardHeader>
-                <CardTitle>Add Funds</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="amount">Amount</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                    <Input
-                      id="amount"
-                      type="number"
-                      value={addAmount}
-                      onChange={(e) => setAddAmount(e.target.value)}
-                      placeholder="0.00"
-                      className="pl-8"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Payment Method</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      type="button"
-                      variant={paymentMethod === 'card' ? 'default' : 'outline'}
-                      onClick={() => setPaymentMethod('card')}
-                      className="justify-start"
-                    >
-                      <CreditCard className="mr-2 h-4 w-4" />
-                      Card
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={paymentMethod === 'bank' ? 'default' : 'outline'}
-                      onClick={() => setPaymentMethod('bank')}
-                      className="justify-start"
-                    >
-                      <Banknote className="mr-2 h-4 w-4" />
-                      Bank
-                    </Button>
-                  </div>
-                </div>
-                <div className="bg-muted p-3 rounded-lg text-sm text-muted-foreground">
-                  <div className="flex items-start gap-2">
-                    <AlertCircle className="h-4 w-4 mt-0.5" />
-                    <p>Funds will be available instantly. Processing fee may apply.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <Button variant="outline" className="flex-1" onClick={() => setIsAddFundsOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    className="flex-1" 
-                    onClick={handleAddFunds}
-                    disabled={!addAmount || isLoading}
-                  >
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Add Funds
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
-        )}
-
-        {isWithdrawOpen && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <Card className="w-full max-w-md">
-              <CardHeader>
-                <CardTitle>Withdraw Funds</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="withdraw-amount">Amount</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                    <Input
-                      id="withdraw-amount"
-                      type="number"
-                      value={withdrawAmount}
-                      onChange={(e) => setWithdrawAmount(e.target.value)}
-                      placeholder="0.00"
-                      className="pl-8"
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Available: {formatCurrency(wallet.balance)}
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label>To Account</Label>
-                  <div className="p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-8 bg-green-600 rounded flex items-center justify-center text-white text-xs font-bold">
-                        CHASE
-                      </div>
-                      <div>
-                        <p className="font-medium">Chase Bank</p>
-                        <p className="text-sm text-muted-foreground">{bankAccount}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-muted p-3 rounded-lg text-sm text-muted-foreground">
-                  <div className="flex items-start gap-2">
-                    <Clock className="h-4 w-4 mt-0.5" />
-                    <p>Withdrawals typically take 1-3 business days to process.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <Button variant="outline" className="flex-1" onClick={() => setIsWithdrawOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    className="flex-1" 
-                    onClick={handleWithdraw}
-                    disabled={!withdrawAmount || isLoading}
-                  >
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Withdraw
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
-    </DashboardLayout>
-  )
+        </div>
+      )}
+    </div>
+  );
 }

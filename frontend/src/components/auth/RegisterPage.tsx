@@ -3,11 +3,11 @@ import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useAppStore } from "@/store"
 import { authApi } from "@/lib/api"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2, User, KeyRound, Mail, ArrowRight } from "lucide-react"
+import { PikaWordmark, Confetti } from "@/components/pika/atoms"
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -26,7 +26,7 @@ export function RegisterPage() {
     setError(null)
     const result = await authApi.register(name, email, password)
     if (result.error || !result.data) {
-      setError(result.error || 'Registration failed')
+      setError(result.error || 'No se pudo crear la cuenta. Intenta de nuevo.')
       setIsLoading(false)
       return
     }
@@ -36,110 +36,144 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-2xl">P</span>
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#6419D6] via-[#7B2FF2] to-[#4F12B8] p-4 relative overflow-hidden font-sans">
+      {/* Confetti backdrop layer */}
+      <Confetti seed={15} density={70} />
+
+      {/* Background ambient light */}
+      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-[#FFC52E]/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] rounded-full bg-[#FF3D8A]/10 blur-[130px] pointer-events-none" />
+
+      {/* Main glass card */}
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-[32px] p-8 shadow-2xl relative z-10 text-white animate-fade-in">
+        <div className="flex flex-col items-center mb-6">
+          <PikaWordmark height={40} color="#fff" />
+          <h2 className="text-3xl font-black font-display text-center tracking-tight mt-6 mb-1 text-white">
+            Crea tu cuenta
+          </h2>
+          <p className="text-white/80 font-medium text-center text-sm max-w-[280px]">
+            Olvídate de las comisiones y cobra al instante
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="name" className="text-xs font-black uppercase tracking-wider text-white/80 flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5" />
+              Nombre Completo
+            </Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="Juan Pérez"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="h-12 bg-white/10 hover:bg-white/15 border-white/10 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-white/20 rounded-2xl pl-4 transition-all"
+            />
           </div>
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-          <CardDescription>
-            Enter your information to get started
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-xs font-black uppercase tracking-wider text-white/80 flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5" />
+              Correo Electrónico
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="nombre@ejemplo.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="h-12 bg-white/10 hover:bg-white/15 border-white/10 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-white/20 rounded-2xl pl-4 transition-all"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className="text-xs font-black uppercase tracking-wider text-white/80 flex items-center gap-1.5">
+              <KeyRound className="w-3.5 h-3.5" />
+              Contraseña
+            </Label>
+            <div className="relative">
               <Input
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Crea una contraseña segura"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
+                className="h-12 bg-white/10 hover:bg-white/15 border-white/10 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-white/20 rounded-2xl pl-4 pr-12 transition-all"
               />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-white/70" />
+                ) : (
+                  <Eye className="h-4 w-4 text-white/70" />
+                )}
+              </button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Create a password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Password must be at least 8 characters long
-              </p>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="terms"
-                checked={agreedToTerms}
-                onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                required
-              />
-              <Label htmlFor="terms" className="text-sm font-normal">
-                I agree to the{" "}
-                <Link to="/terms" className="text-primary hover:underline">
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link to="/privacy" className="text-primary hover:underline">
-                  Privacy Policy
-                </Link>
-              </Label>
-            </div>
-          </CardContent>
-          {error && <p className="px-6 pb-2 text-sm text-destructive">{error}</p>}
-          <CardFooter className="flex flex-col space-y-4">
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading || !agreedToTerms}
-            >
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Account
-            </Button>
-            <p className="text-sm text-muted-foreground text-center">
-              Already have an account?{" "}
-              <Link to="/login" className="text-primary hover:underline">
-                Sign in
-              </Link>
+            <p className="text-[10px] text-white/60 font-semibold pl-1">
+              Debe tener al menos 8 caracteres de longitud.
             </p>
-          </CardFooter>
+          </div>
+
+          <div className="flex items-start space-x-2 pt-2 pb-1">
+            <Checkbox
+              id="terms"
+              checked={agreedToTerms}
+              onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+              required
+              className="border-white/20 mt-0.5 data-[state=checked]:bg-[#FFC52E] data-[state=checked]:text-[#17102A]"
+            />
+            <Label htmlFor="terms" className="text-[11px] font-semibold text-white/85 leading-normal cursor-pointer select-none">
+              Acepto los{" "}
+              <Link to="/terms" className="text-[#FFC52E] hover:underline font-bold">
+                Términos de Servicio
+              </Link>{" "}
+              y la{" "}
+              <Link to="/privacy" className="text-[#FFC52E] hover:underline font-bold">
+                Política de Privacidad
+              </Link>
+            </Label>
+          </div>
+
+          {error && (
+            <div className="bg-red-500/20 border border-red-500/30 text-red-100 rounded-xl p-3 text-xs font-bold flex items-center gap-2 animate-shake">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+              {error}
+            </div>
+          )}
+
+          <div className="pt-2">
+            <Button
+              type="submit"
+              disabled={isLoading || !agreedToTerms}
+              className="w-full h-12 bg-[#FFC52E] hover:bg-[#FFD65C] active:scale-[0.98] disabled:bg-white/10 disabled:text-white/40 text-[#17102A] font-black rounded-full shadow-lg hover:shadow-[#FFC52E]/10 transition-all flex items-center justify-center gap-2 text-sm"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin text-[#17102A]" />
+              ) : (
+                <>
+                  Crear mi cuenta ⚡
+                </>
+              )}
+            </Button>
+          </div>
         </form>
-      </Card>
+
+        <div className="mt-6 pt-5 border-t border-white/10 text-center text-xs font-semibold">
+          <p className="text-white/70">
+            ¿Ya tienes una cuenta?{" "}
+            <Link to="/login" className="text-[#FFC52E] hover:text-[#ffd361] font-black inline-flex items-center gap-0.5 hover:underline ml-1">
+              Inicia sesión aquí <ArrowRight className="w-3 h-3" />
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
