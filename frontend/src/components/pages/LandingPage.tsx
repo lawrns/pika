@@ -12,7 +12,7 @@ export default function LandingPage() {
   return (
     <div className="w-full min-h-screen font-sans bg-muted/30 text-neutral-900 flex flex-col">
       {/* ── HERO SECTION ── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#7B2FF2] to-[#6015D1] text-white px-6 md:px-12 py-16 md:py-24 min-h-[640px] flex flex-col justify-between">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#4C1D95] via-[#2E1065] to-[#0F052D] text-white px-6 md:px-12 py-16 md:py-24 min-h-[640px] flex flex-col justify-between">
         <Confetti seed={4} density={80} />
 
         {/* Navigation */}
@@ -24,14 +24,14 @@ export default function LandingPage() {
             <a href="#trust" className="hover:text-white transition-colors">Seguridad</a>
             <button
               onClick={handleStart}
-              className="px-6 py-2.5 bg-[#22A952] hover:bg-[#1E9649] text-white font-bold rounded-full shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              className="px-6 py-2.5 bg-white hover:bg-neutral-100 text-[#17102A] font-bold rounded-full shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
             >
               Regístrate
             </button>
           </div>
           <button
             onClick={handleStart}
-            className="md:hidden px-5 py-2 bg-[#22A952] hover:bg-[#1E9649] text-white font-bold rounded-full text-xs shadow-md"
+            className="md:hidden px-5 py-2 border border-white/20 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full text-xs backdrop-blur shadow-sm"
           >
             Entrar
           </button>
@@ -45,7 +45,10 @@ export default function LandingPage() {
             </span>
 
             <h1 className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight mb-6 text-white">
-              Envía tu pago <br /> con Pika
+              Envía tu pago <br /> 
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-indigo-400">
+                con Pika
+              </span>
             </h1>
 
             <p className="text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-xl mb-8 drop-shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
@@ -123,31 +126,31 @@ export default function LandingPage() {
               step: '01',
               title: 'Crea el cobro',
               desc: 'Indica el monto y el concepto. Generas un link seguro en un tap.',
-              bg: 'bg-[#FFF2BF]',
+              bg: 'bg-[#FFF2BF]/12 border border-[#FFF2BF]/20',
               text: 'text-[#FF7A3D]',
             },
             {
               step: '02',
               title: 'Comparte por WhatsApp',
               desc: 'Manda el link a tu amigo. No necesita descargar ninguna app para pagarte.',
-              bg: 'bg-[#EFE4FF]',
+              bg: 'bg-[#EFE4FF]/12 border border-[#EFE4FF]/20',
               text: 'text-[#6419D6]',
             },
             {
               step: '03',
               title: 'Recibe en tu banco',
               desc: 'Tu amigo paga con SPEI o DiMo desde su banca móvil. Recibes directo y listo.',
-              bg: 'bg-[#DDF8E7]',
+              bg: 'bg-[#DDF8E7]/12 border border-[#DDF8E7]/20',
               text: 'text-[#22A952]',
             },
           ].map((s) => (
-            <div key={s.step} className={`${s.bg} rounded-[28px] p-8 min-h-[260px] flex flex-col justify-between shadow-sm border border-black/5`}>
-              <div className={`font-display text-7xl font-black ${s.text} opacity-30`}>
+            <div key={s.step} className={`${s.bg} rounded-[28px] p-8 min-h-[260px] flex flex-col justify-between shadow-sm backdrop-blur`}>
+              <div className={`font-display text-7xl font-black ${s.text} opacity-40`}>
                 {s.step}
               </div>
               <div>
                 <h3 className="text-xl font-extrabold text-[#17102A] mb-2">{s.title}</h3>
-                <p className="text-neutral-600 text-sm leading-relaxed">{s.desc}</p>
+                <p className="text-neutral-500 text-sm leading-relaxed">{s.desc}</p>
               </div>
             </div>
           ))}
