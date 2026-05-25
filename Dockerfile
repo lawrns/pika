@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Copy package files from backend
 COPY backend/package*.json ./
-RUN npm ci --only=production
+RUN npm ci --include=prod
 
 # Production image
 FROM base AS runner
