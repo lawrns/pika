@@ -156,18 +156,18 @@ export default function DashboardOverviewPage() {
       ) : (
         <div className="px-6 space-y-6 max-w-lg mx-auto">
           {/* ── CALL TO ACTION HERO ── */}
-          <div className="bg-card border border-border rounded-3xl p-6 relative overflow-hidden shadow-sm">
+          <div className="bg-gradient-to-br from-primary to-primary/80 text-white rounded-3xl p-6 relative overflow-hidden shadow-lg border border-primary/20">
             <div className="relative z-10 flex flex-col items-start">
-              <span className="text-xs font-mono uppercase tracking-wider text-primary mb-2">Pika MX</span>
-              <h2 className="text-2xl font-semibold tracking-tight text-foreground leading-[1.15] mb-2">¿Te deben una lana?</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mb-5">
+              <span className="text-xs font-mono uppercase tracking-wider text-white/80 mb-2">Pika MX</span>
+              <h2 className="text-2xl font-semibold tracking-tight text-white leading-[1.15] mb-2">¿Te deben una lana?</h2>
+              <p className="text-sm text-white/85 leading-relaxed max-w-xs mb-5">
                 Crea un cobro rápido y compártelo por WhatsApp. Tus amigos pagan de volada por SPEI o DiMo.
               </p>
               <button
                 onClick={handleCreateRequest}
-                className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-full text-xs shadow transition-all active:scale-95 flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full text-xs shadow transition-all active:scale-95 flex items-center gap-1.5"
               >
-                Nuevo Pika <Zap className="w-4 h-4 text-primary-foreground shrink-0" />
+                Nuevo Pika <Zap className="w-4 h-4 text-[#17102A] shrink-0" />
               </button>
             </div>
           </div>

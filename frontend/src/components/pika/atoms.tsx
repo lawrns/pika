@@ -92,7 +92,7 @@ export function Confetti({ seed = 7, density = 70 }: ConfettiProps) {
     <svg
       className="__layer"
       viewBox="0 0 100 100"
-      preserveAspectRatio="none"
+      preserveAspectRatio="xMidYMid slice"
       style={{ width: '100%', height: '100%', position: 'absolute', inset: 0, pointerEvents: 'none' }}
       aria-hidden="true"
     >
