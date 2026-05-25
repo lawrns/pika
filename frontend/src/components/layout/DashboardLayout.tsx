@@ -57,28 +57,37 @@ export function Sidebar({ className, isCollapsed }: SidebarProps) {
         
         <ScrollArea className="flex-1 px-2">
           <div className="space-y-1">
-            {sidebarNavItems.map((item) => (
-              <Button
-                key={item.href}
-                variant={location.pathname === item.href ? "secondary" : "ghost"}
-                className={cn("w-full justify-start", isCollapsed && "justify-center px-2")}
-                asChild
-              >
-                <Link to={item.href}>
-                  <item.icon className={cn("h-4 w-4", !isCollapsed && "mr-2")} />
-                  {!isCollapsed && (
-                    <>
-                      {item.title}
-                      {item.href === '/dashboard/contacts' && contacts.length > 0 && (
-                        <Badge variant="secondary" className="ml-auto text-xs">
-                          {contacts.length}
-                        </Badge>
-                      )}
-                    </>
+            {sidebarNavItems.map((item) => {
+              const isActive = location.pathname === item.href;
+              return (
+                <Button
+                  key={item.href}
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start rounded-xl transition-all border border-transparent font-medium",
+                    isCollapsed && "justify-center px-2",
+                    isActive
+                      ? "border-primary bg-primary/5 text-primary hover:bg-primary/10 font-bold"
+                      : "hover:bg-muted text-muted-foreground hover:text-foreground"
                   )}
-                </Link>
-              </Button>
-            ))}
+                  asChild
+                >
+                  <Link to={item.href}>
+                    <item.icon className={cn("h-4 w-4", !isCollapsed && "mr-2", isActive && "text-primary")} />
+                    {!isCollapsed && (
+                      <>
+                        {item.title}
+                        {item.href === '/dashboard/contacts' && contacts.length > 0 && (
+                          <Badge variant="secondary" className="ml-auto text-xs">
+                            {contacts.length}
+                          </Badge>
+                        )}
+                      </>
+                    )}
+                  </Link>
+                </Button>
+              );
+            })}
           </div>
           
           <div className="mt-6">
@@ -88,19 +97,28 @@ export function Sidebar({ className, isCollapsed }: SidebarProps) {
               </h2>
             )}
             <div className="space-y-1">
-              {sidebarSecondaryItems.map((item) => (
-                <Button
-                  key={item.href}
-                  variant={location.pathname === item.href ? "secondary" : "ghost"}
-                  className={cn("w-full justify-start", isCollapsed && "justify-center px-2")}
-                  asChild
-                >
-                  <Link to={item.href}>
-                    <item.icon className={cn("h-4 w-4", !isCollapsed && "mr-2")} />
-                    {!isCollapsed && item.title}
-                  </Link>
-                </Button>
-              ))}
+              {sidebarSecondaryItems.map((item) => {
+                const isActive = location.pathname === item.href;
+                return (
+                  <Button
+                    key={item.href}
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start rounded-xl transition-all border border-transparent font-medium",
+                      isCollapsed && "justify-center px-2",
+                      isActive
+                        ? "border-primary bg-primary/5 text-primary hover:bg-primary/10 font-bold"
+                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                    )}
+                    asChild
+                  >
+                    <Link to={item.href}>
+                      <item.icon className={cn("h-4 w-4", !isCollapsed && "mr-2", isActive && "text-primary")} />
+                      {!isCollapsed && item.title}
+                    </Link>
+                  </Button>
+                );
+              })}
             </div>
           </div>
         </ScrollArea>

@@ -80,14 +80,14 @@ export default function WalletPage() {
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto pb-12">
       {/* ── HEADER ── */}
       <div>
-        <h1 className="text-3xl font-black font-display text-foreground tracking-tight">Mi Billetera</h1>
-        <p className="text-muted-foreground font-semibold text-sm mt-1">
+        <h1 className="text-3xl font-extrabold font-display text-[#17102A] tracking-tight">Mi Billetera</h1>
+        <p className="text-neutral-400 font-semibold text-sm mt-1">
           Gestiona tus fondos y métodos de recepción SPEI / CoDi
         </p>
       </div>
 
       {/* ── CARD HERO ── */}
-      <div className="bg-zinc-950 text-zinc-50 rounded-3xl p-8 relative overflow-hidden shadow-xl border border-zinc-800">
+      <div className="bg-gradient-to-br from-[#120B24] via-[#0E071A] to-[#080210] text-white rounded-[28px] p-8 relative overflow-hidden shadow-xl border border-white/5">
         {/* Radial spotlight effect */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.08),transparent_60%)] pointer-events-none" />
         <div className="absolute top-0 right-0 p-8 opacity-5">
@@ -95,20 +95,20 @@ export default function WalletPage() {
         </div>
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900 text-zinc-300 text-xs font-mono border border-zinc-800/80">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20">
               <Shield className="h-3.5 w-3.5 text-primary shrink-0" /> BALANCE PIKA MXN
             </span>
             <h2 className="text-5xl md:text-6xl font-black font-display tracking-tight leading-none mt-2 font-mono-number">
               {fmtMXN(wallet.balance)}
             </h2>
-            <p className="text-zinc-400 text-xs font-semibold mt-2">
+            <p className="text-white/60 text-xs font-semibold mt-2">
               CLABE SPEI Vinculada • {bankAccount}
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <button 
               onClick={() => setIsAddFundsOpen(true)}
-              className="px-6 py-3.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-100 font-bold rounded-full border border-zinc-800/85 shadow-md transition-all active:scale-95 flex items-center gap-2 text-xs"
+              className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full border border-white/15 shadow-md transition-all active:scale-95 flex items-center gap-2 text-xs backdrop-blur"
             >
               <Plus className="h-4 w-4 stroke-[3]" />
               Añadir fondos
@@ -126,66 +126,66 @@ export default function WalletPage() {
 
       {/* ── METRICS GRID ── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
-          <span className="text-xs font-semibold text-muted-foreground block mb-2">Cobrado este mes</span>
+        <div className="bg-white border border-[#E5E7EB] rounded-[28px] p-6 shadow-sm">
+          <span className="text-xs font-semibold text-neutral-400 block mb-2">Cobrado este mes</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-semibold tracking-tight text-foreground font-mono-number">+{fmtMXN(3890)}</span>
-            <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            <span className="text-3xl font-extrabold tracking-tight text-[#17102A] font-mono-number">+{fmtMXN(3890)}</span>
+            <span className="inline-flex items-center gap-0.5 text-xs font-bold text-emerald-600">
               <ArrowDownLeft className="h-3.5 w-3.5 stroke-[2.5]" /> 12.4%
             </span>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-1.5 font-medium">vs. mes anterior</p>
+          <p className="text-[10px] text-neutral-400 mt-1.5 font-medium">vs. mes anterior</p>
         </div>
         
-        <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
-          <span className="text-xs font-semibold text-muted-foreground block mb-2">Retirado a Banco</span>
+        <div className="bg-white border border-[#E5E7EB] rounded-[28px] p-6 shadow-sm">
+          <span className="text-xs font-semibold text-neutral-400 block mb-2">Retirado a Banco</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-semibold tracking-tight text-foreground font-mono-number">-{fmtMXN(1450)}</span>
-            <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-muted-foreground">
+            <span className="text-3xl font-extrabold tracking-tight text-[#17102A] font-mono-number">-{fmtMXN(1450)}</span>
+            <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-neutral-400">
               <ArrowUpRight className="h-3.5 w-3.5 stroke-[2.5]" /> 4.2%
             </span>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-1.5 font-medium">vs. mes anterior</p>
+          <p className="text-[10px] text-neutral-400 mt-1.5 font-medium">vs. mes anterior</p>
         </div>
 
-        <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
-          <span className="text-xs font-semibold text-muted-foreground block mb-2">Cobros pendientes</span>
+        <div className="bg-white border border-[#E5E7EB] rounded-[28px] p-6 shadow-sm">
+          <span className="text-xs font-semibold text-neutral-400 block mb-2">Cobros pendientes</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-semibold tracking-tight text-foreground font-mono-number">{fmtMXN(420)}</span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-200/40 dark:border-amber-500/25 ml-2">
+            <span className="text-3xl font-extrabold tracking-tight text-[#17102A] font-mono-number">{fmtMXN(420)}</span>
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200/40 ml-2">
               2 activos
             </span>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-1.5 font-medium">Liquidándose por SPEI</p>
+          <p className="text-[10px] text-neutral-400 mt-1.5 font-medium">Liquidándose por SPEI</p>
         </div>
       </div>
 
       {/* ── ACCOUNTS SECTION ── */}
-      <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
-        <h3 className="text-lg font-black font-display text-foreground flex items-center gap-2">
-          <Landmark className="h-5 w-5 text-muted-foreground" /> Métodos de cobro vinculados
+      <div className="bg-white border border-[#E5E7EB] rounded-[28px] p-8 shadow-sm space-y-6">
+        <h3 className="text-lg font-extrabold font-display text-[#17102A] flex items-center gap-2">
+          <Landmark className="h-5 w-5 text-neutral-400" /> Métodos de cobro vinculados
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center justify-between p-5 border border-border rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all group">
+          <div className="flex items-center justify-between p-5 border border-[#E5E7EB] rounded-2xl bg-neutral-50 hover:bg-neutral-100 transition-all group cursor-pointer">
             <div className="flex items-center gap-4">
-              <span className="w-12 h-12 rounded-xl bg-muted border border-border text-foreground font-bold flex items-center justify-center text-[10px] tracking-tight group-hover:bg-background transition-colors">
+              <span className="w-12 h-12 rounded-xl bg-neutral-100 border border-[#E5E7EB] text-[#4B5563] font-bold flex items-center justify-center text-[10px] tracking-tight group-hover:bg-white transition-colors font-sans">
                 BBVA
               </span>
               <div>
-                <p className="font-extrabold text-sm text-foreground">BBVA Bancomer</p>
-                <p className="text-xs text-muted-foreground font-semibold">Cuenta CLABE vinculada • **** 8943</p>
+                <p className="font-extrabold text-sm text-[#17102A]">BBVA Bancomer</p>
+                <p className="text-xs text-neutral-400 font-semibold">Cuenta CLABE vinculada • **** 8943</p>
               </div>
             </div>
           </div>
           
-          <div className="flex items-center justify-between p-5 border border-border rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all group">
+          <div className="flex items-center justify-between p-5 border border-[#E5E7EB] rounded-2xl bg-neutral-50 hover:bg-neutral-100 transition-all group cursor-pointer">
             <div className="flex items-center gap-4">
-              <span className="w-12 h-12 rounded-xl bg-muted border border-border text-foreground font-bold flex items-center justify-center text-[10px] tracking-tight group-hover:bg-background transition-colors">
+              <span className="w-12 h-12 rounded-xl bg-neutral-100 border border-[#E5E7EB] text-[#4B5563] font-bold flex items-center justify-center text-[10px] tracking-tight group-hover:bg-white transition-colors font-sans">
                 SAN
               </span>
               <div>
-                <p className="font-extrabold text-sm text-foreground">Banco Santander</p>
-                <p className="text-xs text-muted-foreground font-semibold">Cuenta de respaldo vinculada • **** 1205</p>
+                <p className="font-extrabold text-sm text-[#17102A]">Banco Santander</p>
+                <p className="text-xs text-neutral-400 font-semibold">Cuenta de respaldo vinculada • **** 1205</p>
               </div>
             </div>
           </div>

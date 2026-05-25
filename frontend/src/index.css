@@ -25,9 +25,9 @@
     --popover-foreground: 224 71.4% 4.1%;
 
     /* Primary - Premium Deep Indigo-Violet (High-end Fintech) */
-    --primary: 250 84% 54%;
+    --primary: 263 89% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 250 84% 65%;
+    --primary-glow: 263 89% 65%;
 
     /* Secondary - Very clean Slate Neutrals */
     --secondary: 240 5.9% 96%;
@@ -75,9 +75,9 @@
     --popover-foreground: 0 0% 98%;
 
     /* Primary - Enhanced Deep Indigo for Dark Mode */
-    --primary: 250 84% 62%;
+    --primary: 263 89% 62%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 250 84% 72%;
+    --primary-glow: 263 89% 72%;
 
     /* Secondary */
     --secondary: 240 3.7% 15.9%;
