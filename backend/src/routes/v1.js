@@ -85,7 +85,7 @@ function requireOwner(request, userId, res) {
 
 // ── HEALTH ──
 router.get('/health', async (_req, res) => {
-  res.json({ status: 'healthy', timestamp: now(), database: db.isMock ? 'mock-inmemory' : 'appwrite-connected', version: '1.1.0' });
+  res.json({ status: 'healthy', timestamp: now(), database: db.isMock ? 'mock-inmemory' : (db.backend || 'connected'), version: '1.1.0' });
 });
 
 // ── PROFILE/ME ──

@@ -97,7 +97,7 @@ app.get('/health', async (req, res) => {
     res.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      database: dbCheck ? (db.isMock ? 'mock-inmemory' : 'appwrite-connected') : 'error',
+      database: dbCheck ? (db.isMock ? 'mock-inmemory' : (db.backend || 'connected')) : 'error',
       redis: redisStatus,
       version: '1.0.0'
     });

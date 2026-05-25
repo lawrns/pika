@@ -1,11 +1,13 @@
 import { Client, Databases, Users, Storage } from 'node-appwrite';
 import dotenv from 'dotenv';
+import pool from '../config/database.js';
+
 
 dotenv.config();
 
-const hasAppwriteCredentials = 
-  process.env.APPWRITE_ENDPOINT && 
-  process.env.APPWRITE_PROJECT_ID && 
+const hasAppwriteCredentials =
+  process.env.APPWRITE_ENDPOINT &&
+  process.env.APPWRITE_PROJECT_ID &&
   process.env.APPWRITE_API_KEY &&
   !process.env.APPWRITE_ENDPOINT.includes('placeholder') &&
   !process.env.APPWRITE_PROJECT_ID.includes('placeholder') &&
@@ -13,12 +15,13 @@ const hasAppwriteCredentials =
   !process.env.APPWRITE_API_KEY.includes('your_appwrite_api_key') &&
   process.env.APPWRITE_PROJECT_ID !== 'pika-production';
 
+const hasPostgres = Boolean(process.env.DATABASE_URL);
 let appwriteClient = null;
 let databases = null;
 let usersService = null;
 let storage = null;
+let postgresReady = false;
 
-// Clean mock database for in-memory fallback
 const mockDb = {
   users: new Map(),
   receiving_accounts: new Map(),
@@ -32,7 +35,7 @@ const mockDb = {
   contacts: new Map(),
   reminders: new Map(),
   receipts: new Map(),
-  fraud_signals: []
+  fraud_signals: new Map()
 };
 
 if (hasAppwriteCredentials) {
@@ -50,88 +53,137 @@ if (hasAppwriteCredentials) {
   } catch (error) {
     console.error('❌ Failed to initialize Appwrite client:', error);
   }
+} else if (hasPostgres) {
+  console.log('✅ Appwrite credentials missing. Using PostgreSQL document store fallback.');
 } else {
-  console.log('⚠️ Appwrite credentials missing. Using local in-memory fallback database.');
+  console.log('⚠️ Appwrite/PostgreSQL credentials missing. Using local in-memory fallback database.');
 }
 
-// Unified Database CRUD Helper - resolves to Appwrite or mock fallback
-export const getDatabase = () => {
-  const mockDbImpl = {
-    isMock: true,
-    listDocuments: async (collectionId) => {
-      const docs = Array.from(mockDb[collectionId]?.values() || []);
-      return { total: docs.length, documents: docs };
-    },
-    createDocument: async (collectionId, documentId, data) => {
-      const id = documentId === 'unique()' ? 'doc_' + Math.random().toString(36).substring(2, 9) : documentId;
-      const doc = { $id: id, ...data, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-      if (!mockDb[collectionId]) mockDb[collectionId] = new Map();
-      mockDb[collectionId].set(id, doc);
-      return doc;
-    },
-    getDocument: async (collectionId, documentId) => {
-      const doc = mockDb[collectionId]?.get(documentId);
-      if (!doc) throw new Error(`Document ${documentId} not found in ${collectionId}`);
-      return doc;
-    },
-    updateDocument: async (collectionId, documentId, data) => {
-      const existing = mockDb[collectionId]?.get(documentId) || {};
-      const updated = { ...existing, ...data, updatedAt: new Date().toISOString() };
-      mockDb[collectionId].set(documentId, updated);
-      return updated;
-    },
-    deleteDocument: async (collectionId, documentId) => {
-      mockDb[collectionId]?.delete(documentId);
-      return { success: true };
-    }
-  };
+async function ensurePostgresStore() {
+  if (postgresReady) return;
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS collection_documents (
+      id TEXT PRIMARY KEY,
+      collection_id TEXT NOT NULL,
+      data JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await pool.query('CREATE INDEX IF NOT EXISTS idx_collection_documents_collection_id ON collection_documents(collection_id)');
+  await pool.query('CREATE INDEX IF NOT EXISTS idx_collection_documents_data_gin ON collection_documents USING GIN(data)');
+  postgresReady = true;
+}
 
+function withId(row) {
+  return { $id: row.id, ...(row.data || {}) };
+}
+
+function uniqueId() {
+  return `doc_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+const postgresDbImpl = {
+  isMock: false,
+  backend: 'postgres-document-store',
+  listDocuments: async (collectionId) => {
+    await ensurePostgresStore();
+    const result = await pool.query(
+      'SELECT id, data FROM collection_documents WHERE collection_id = $1 ORDER BY created_at ASC',
+      [collectionId]
+    );
+    const documents = result.rows.map(withId);
+    return { total: documents.length, documents };
+  },
+  createDocument: async (collectionId, documentId, data) => {
+    await ensurePostgresStore();
+    const id = documentId === 'unique()' ? uniqueId() : documentId;
+    const now = new Date().toISOString();
+    const doc = { $id: id, ...data, createdAt: data.createdAt || now, updatedAt: data.updatedAt || now };
+    const stored = { ...doc };
+    delete stored.$id;
+    await pool.query(
+      `INSERT INTO collection_documents (id, collection_id, data, created_at, updated_at)
+       VALUES ($1, $2, $3::jsonb, NOW(), NOW())
+       ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+      [id, collectionId, JSON.stringify(stored)]
+    );
+    return doc;
+  },
+  getDocument: async (collectionId, documentId) => {
+    await ensurePostgresStore();
+    const result = await pool.query(
+      'SELECT id, data FROM collection_documents WHERE collection_id = $1 AND id = $2',
+      [collectionId, documentId]
+    );
+    if (!result.rows[0]) throw new Error(`Document ${documentId} not found in ${collectionId}`);
+    return withId(result.rows[0]);
+  },
+  updateDocument: async (collectionId, documentId, data) => {
+    await ensurePostgresStore();
+    const existing = await postgresDbImpl.getDocument(collectionId, documentId);
+    const updated = { ...existing, ...data, updatedAt: new Date().toISOString() };
+    const stored = { ...updated };
+    delete stored.$id;
+    await pool.query(
+      'UPDATE collection_documents SET data = $3::jsonb, updated_at = NOW() WHERE collection_id = $1 AND id = $2',
+      [collectionId, documentId, JSON.stringify(stored)]
+    );
+    return updated;
+  },
+  deleteDocument: async (collectionId, documentId) => {
+    await ensurePostgresStore();
+    await pool.query('DELETE FROM collection_documents WHERE collection_id = $1 AND id = $2', [collectionId, documentId]);
+    return { success: true };
+  }
+};
+
+const mockDbImpl = {
+  isMock: true,
+  backend: 'in-memory',
+  listDocuments: async (collectionId) => {
+    const docs = Array.from(mockDb[collectionId]?.values() || []);
+    return { total: docs.length, documents: docs };
+  },
+  createDocument: async (collectionId, documentId, data) => {
+    const id = documentId === 'unique()' ? uniqueId() : documentId;
+    const doc = { $id: id, ...data, createdAt: data.createdAt || new Date().toISOString(), updatedAt: data.updatedAt || new Date().toISOString() };
+    if (!mockDb[collectionId]) mockDb[collectionId] = new Map();
+    mockDb[collectionId].set(id, doc);
+    return doc;
+  },
+  getDocument: async (collectionId, documentId) => {
+    const doc = mockDb[collectionId]?.get(documentId);
+    if (!doc) throw new Error(`Document ${documentId} not found in ${collectionId}`);
+    return doc;
+  },
+  updateDocument: async (collectionId, documentId, data) => {
+    const existing = mockDb[collectionId]?.get(documentId) || {};
+    const updated = { ...existing, ...data, updatedAt: new Date().toISOString() };
+    if (!mockDb[collectionId]) mockDb[collectionId] = new Map();
+    mockDb[collectionId].set(documentId, updated);
+    return updated;
+  },
+  deleteDocument: async (collectionId, documentId) => {
+    mockDb[collectionId]?.delete(documentId);
+    return { success: true };
+  }
+};
+
+export const getDatabase = () => {
   if (databases) {
     return {
       isMock: false,
-      listDocuments: async (collectionId, queries = []) => {
-        try {
-          return await databases.listDocuments('pika_main', collectionId, queries);
-        } catch (error) {
-          console.warn(`⚠️ Appwrite listDocuments failed, falling back to mock: ${error.message}`);
-          return mockDbImpl.listDocuments(collectionId);
-        }
-      },
-      createDocument: async (collectionId, documentId, data) => {
-        try {
-          return await databases.createDocument('pika_main', collectionId, documentId, data);
-        } catch (error) {
-          console.warn(`⚠️ Appwrite createDocument failed, falling back to mock: ${error.message}`);
-          return mockDbImpl.createDocument(collectionId, documentId, data);
-        }
-      },
-      getDocument: async (collectionId, documentId) => {
-        try {
-          return await databases.getDocument('pika_main', collectionId, documentId);
-        } catch (error) {
-          console.warn(`⚠️ Appwrite getDocument failed, falling back to mock: ${error.message}`);
-          return mockDbImpl.getDocument(collectionId, documentId);
-        }
-      },
-      updateDocument: async (collectionId, documentId, data) => {
-        try {
-          return await databases.updateDocument('pika_main', collectionId, documentId, data);
-        } catch (error) {
-          console.warn(`⚠️ Appwrite updateDocument failed, falling back to mock: ${error.message}`);
-          return mockDbImpl.updateDocument(collectionId, documentId, data);
-        }
-      },
-      deleteDocument: async (collectionId, documentId) => {
-        try {
-          return await databases.deleteDocument('pika_main', collectionId, documentId);
-        } catch (error) {
-          console.warn(`⚠️ Appwrite deleteDocument failed, falling back to mock: ${error.message}`);
-          return mockDbImpl.deleteDocument(collectionId, documentId);
-        }
-      }
+      backend: 'appwrite',
+      listDocuments: async (collectionId, queries = []) => databases.listDocuments('pika_main', collectionId, queries),
+      createDocument: async (collectionId, documentId, data) => databases.createDocument('pika_main', collectionId, documentId, data),
+      getDocument: async (collectionId, documentId) => databases.getDocument('pika_main', collectionId, documentId),
+      updateDocument: async (collectionId, documentId, data) => databases.updateDocument('pika_main', collectionId, documentId, data),
+      deleteDocument: async (collectionId, documentId) => databases.deleteDocument('pika_main', collectionId, documentId)
     };
   }
 
+  if (hasPostgres) return postgresDbImpl;
   return mockDbImpl;
 };
 
