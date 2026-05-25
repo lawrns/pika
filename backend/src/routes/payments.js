@@ -2,10 +2,13 @@ import express from 'express';
 import { PaymentLink } from '../models/PaymentLink.js';
 import { Transaction } from '../models/Transaction.js';
 import { Wallet } from '../models/Wallet.js';
+import { User } from '../models/User.js';
 import { authenticateToken, requireVerified } from '../middleware/auth.js';
 import { validate, schemas } from '../middleware/validation.js';
 import { generatePaymentQRCode, generateSPEIQRCode } from '../utils/qrCode.js';
 import { createSPEIProcessor } from '../utils/stipago.js';
+import { v4 as uuidv4 } from 'uuid';
+import { createIdempotencyKey } from '../utils/transaction.js';
 import {
   paymentRateLimiter,
   paymentLinkCreationLimiter,
@@ -58,6 +61,67 @@ router.post('/links',
     res.status(500).json({ error: 'Failed to create payment link' });
   }
 });
+
+// Get payment link by reference code (public)
+router.get('/public/:referenceCode', async (req, res) => {
+  try {
+    const paymentLink = await PaymentLink.findByReferenceCode(req.params.referenceCode);
+
+    if (!paymentLink) {
+      return res.status(404).json({ error: 'Payment link not found' });
+    }
+
+    const isValid = await PaymentLink.isValid(paymentLink);
+    const merchant = await User.findById(paymentLink.user_id);
+    const paymentUrl = `${process.env.FRONTEND_URL || process.env.API_BASE_URL || ''}/pay/${paymentLink.reference_code}`;
+
+    res.json({
+      paymentLink: {
+        id: paymentLink.id,
+        referenceCode: paymentLink.reference_code,
+        amount: Number(paymentLink.amount),
+        currency: paymentLink.currency || 'MXN',
+        description: paymentLink.description,
+        status: paymentLink.status,
+        isValid,
+        expiresAt: paymentLink.expires_at,
+        paymentUrl,
+        merchantName: merchant?.full_name || merchant?.email || 'Pika merchant'
+      }
+    });
+  } catch (error) {
+    console.error('Get public payment link error:', error);
+    res.status(500).json({ error: 'Failed to fetch payment link' });
+  }
+});
+
+router.post('/public/:referenceCode/intent',
+  paymentRateLimiter,
+  validate(schemas.publicPaymentIntent),
+  async (req, res) => {
+    try {
+      const paymentLink = await PaymentLink.findByReferenceCode(req.params.referenceCode);
+      if (!paymentLink) {
+        return res.status(404).json({ error: 'Payment link not found' });
+      }
+      const isValid = await PaymentLink.isValid(paymentLink);
+      if (!isValid) {
+        return res.status(400).json({ error: 'Payment link is invalid or expired' });
+      }
+
+      res.status(202).json({
+        status: 'pending_provider_reconciliation',
+        instructions: 'Payment intent captured. In production, this is completed only after provider webhook reconciliation.',
+        referenceCode: paymentLink.reference_code,
+        amount: Number(paymentLink.amount),
+        currency: paymentLink.currency || 'MXN'
+      });
+    } catch (error) {
+      console.error('Create public payment intent error:', error);
+      res.status(500).json({ error: 'Failed to create payment intent' });
+    }
+  }
+);
 
 // Get payment link by reference code (public)
 router.get('/links/:referenceCode', async (req, res) => {
@@ -121,7 +185,7 @@ router.post('/pay/:referenceCode',
   async (req, res) => {
   try {
     const requestId = req.headers['x-request-id'] || uuidv4();
-    const idempotencyKey = generateIdempotencyKey(
+    const idempotencyKey = createIdempotencyKey(
       req.user.id,
       `payment:${req.params.referenceCode}`,
       requestId
@@ -143,10 +207,17 @@ router.post('/pay/:referenceCode',
       return res.status(400).json({ error: 'Payment link is invalid or expired' });
     }
 
-    // Perform atomic payment with idempotency
+    // Debit payer wallet and credit merchant wallet.
+    const payerWallet = req.user.wallet_id ? await Wallet.findById(req.user.wallet_id) : await Wallet.findByUserId(req.user.id);
+    const payeeWallet = await Wallet.findByUserId(paymentLink.user_id);
+
+    if (!payerWallet || !payeeWallet) {
+      return res.status(404).json({ error: 'Payer or merchant wallet not found' });
+    }
+
     const result = await Wallet.transfer(
-      paymentLink.wallet_id,
-      req.user.wallet_id || (await Wallet.findByUserId(req.user.id)).id,
+      payerWallet.id,
+      payeeWallet.id,
       paymentLink.amount,
       {
         idempotencyKey,
@@ -285,7 +356,7 @@ router.post('/spei/create', authenticateToken, requireVerified, async (req, res)
     }
 
     const requestId = req.headers['x-request-id'] || uuidv4();
-    const idempotencyKey = generateIdempotencyKey(
+    const idempotencyKey = createIdempotencyKey(
       req.user.id,
       'spei_deposit',
       requestId

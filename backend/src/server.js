@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { connectRedis } from './config/redis.js';
 import pool from './config/database.js';
 import securityConfig from './config/security.js';
+import { assertEnvironment } from './config/env.js';
 import {
   pciComplianceHeaders,
   paymentSecurityHeaders,
@@ -132,6 +133,7 @@ app.use(maskErrorData);
 // Start server
 async function startServer() {
   try {
+    assertEnvironment();
     console.log('🚀 Starting Pika Backend...');
 
     await connectRedis();
@@ -151,6 +153,9 @@ async function startServer() {
   }
 }
 
-startServer();
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
 
+export { startServer };
 export default app;

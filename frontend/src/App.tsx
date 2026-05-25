@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAppStore } from '@/store'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Skeleton } from '@/components/ui/skeleton'
+import { LoginPage } from '@/components/auth/LoginPage'
+import { RegisterPage } from '@/components/auth/RegisterPage'
 
 const DashboardOverviewPage = lazy(() => import('@/components/pages/DashboardOverviewPage').then(m => ({ default: m.default })))
 const WalletPage = lazy(() => import('@/components/pages/WalletPage').then(m => ({ default: m.default })))
@@ -11,6 +13,7 @@ const SendPage = lazy(() => import('@/components/pages/SendPage').then(m => ({ d
 const QRPage = lazy(() => import('@/components/pages/QRPage').then(m => ({ default: m.default })))
 const ContactsPage = lazy(() => import('@/components/pages/ContactsPage').then(m => ({ default: m.default })))
 const SettingsPage = lazy(() => import('@/components/pages/SettingsPage').then(m => ({ default: m.default })))
+const PublicPayPage = lazy(() => import('@/components/pages/PublicPayPage').then(m => ({ default: m.default })))
 
 function PageSkeleton() {
   return (
@@ -39,6 +42,9 @@ export default function App() {
     <Suspense fallback={<PageSkeleton />}>
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/pay/:referenceCode" element={<PublicPayPage />} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <DashboardLayout>

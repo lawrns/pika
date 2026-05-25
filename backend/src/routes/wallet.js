@@ -1,6 +1,5 @@
 import express from 'express';
 import { Wallet } from '../models/Wallet.js';
-import { Transaction } from '../models/Transaction.js';
 import { authenticateToken, requireVerified } from '../middleware/auth.js';
 import { transferRateLimiter } from '../middleware/rateLimiter.js';
 import { requireIdempotency } from '../middleware/idempotency.js';
@@ -154,7 +153,7 @@ router.post('/transfer',
     }
 
     const requestId = req.headers['x-request-id'] || uuidv4();
-    const idempotencyKey = generateIdempotencyKey(
+    const idempotencyKey = createIdempotencyKey(
       req.user.id,
       `transfer:${recipientEmail}`,
       requestId

@@ -11,7 +11,7 @@ export const mockWallet: Wallet = {
   balance: 2456.80,
   accountNumber: '****4582',
   accountName: 'John Doe',
-  currency: 'USD'
+  currency: 'MXN'
 }
 
 export const mockTransactions: Transaction[] = [
@@ -19,7 +19,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-1',
     type: 'incoming',
     amount: 1250,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Payment for services',
     date: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
     status: 'completed',
@@ -29,7 +29,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-2',
     type: 'outgoing',
     amount: 89.99,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Netflix subscription',
     date: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     status: 'completed',
@@ -39,7 +39,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-3',
     type: 'incoming',
     amount: 500,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Freelance payment',
     date: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
     status: 'completed',
@@ -49,7 +49,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-4',
     type: 'outgoing',
     amount: 125.50,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Grocery shopping',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
     status: 'completed',
@@ -59,7 +59,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-5',
     type: 'transfer',
     amount: 200,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Transfer to savings',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
     status: 'completed',
@@ -69,7 +69,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-6',
     type: 'outgoing',
     amount: 65,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Gas station',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
     status: 'completed',
@@ -79,7 +79,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-7',
     type: 'incoming',
     amount: 3200,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Salary deposit',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
     status: 'completed',
@@ -89,7 +89,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-8',
     type: 'outgoing',
     amount: 45,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Coffee shop',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8).toISOString(),
     status: 'completed',
@@ -99,7 +99,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-9',
     type: 'pending',
     amount: 250,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Scheduled transfer to brother',
     date: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
     status: 'pending',
@@ -109,7 +109,7 @@ export const mockTransactions: Transaction[] = [
     id: 'txn-10',
     type: 'incoming',
     amount: 120,
-    currency: 'USD',
+    currency: 'MXN',
     description: 'Split dinner bill',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
     status: 'failed',
@@ -183,7 +183,7 @@ export function getInitials(name: string): string {
 }
 
 // Helper function to format currency
-export function formatCurrency(amount: number, currency: string = 'USD'): string {
+export function formatCurrency(amount: number, currency: string = 'MXN'): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,

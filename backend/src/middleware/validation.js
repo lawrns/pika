@@ -14,10 +14,16 @@ export const schemas = {
   }),
 
   createPaymentLink: Joi.object({
-    amount: Joi.number().positive().required(),
-    currency: Joi.string().valid('MXN', 'USD').default('MXN'),
+    amount: Joi.number().positive().max(1000000).required(),
+    currency: Joi.string().valid('MXN').default('MXN'),
     description: Joi.string().max(500).optional(),
     expiresIn: Joi.number().integer().min(1).max(168).default(24)
+  }),
+
+  publicPaymentIntent: Joi.object({
+    name: Joi.string().min(2).max(120).optional().allow(''),
+    email: Joi.string().email().optional().allow(''),
+    phone: Joi.string().max(30).optional().allow('')
   }),
 
   paymentRequest: Joi.object({

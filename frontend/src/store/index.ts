@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { User, Wallet, Transaction, Contact, AppSettings } from './types'
+import { setAuthToken } from '@/lib/api'
 
 interface AppStore {
   user: User | null
@@ -11,12 +12,12 @@ interface AppStore {
   contacts: Contact[]
   settings: AppSettings
   isLoading: boolean
-  
   setUser: (user: User | null) => void
-  login: (email: string, password: string) => Promise<boolean>
+  login: (user: User, token: string) => void
   logout: () => void
   updateBalance: (amount: number) => void
   setWallet: (wallet: Wallet) => void
+  setTransactions: (transactions: Transaction[]) => void
   addTransaction: (transaction: Transaction) => void
   updateTransaction: (id: string, updates: Partial<Transaction>) => void
   deleteTransaction: (id: string) => void
@@ -41,77 +42,28 @@ export const useAppStore = create<AppStore>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      wallet: {
-        balance: 0,
-        accountNumber: '',
-        accountName: '',
-        currency: 'USD'
-      },
+      wallet: { balance: 0, accountNumber: '', accountName: 'Pika MXN Wallet', currency: 'MXN' },
       balanceLastUpdated: undefined,
       transactions: [],
       contacts: [],
       settings: defaultSettings,
       isLoading: false,
-      
-      setUser: (user) => set({ user }),
-      
-      login: async () => {
-        set({ isLoading: true })
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        set({ isAuthenticated: true, isLoading: false })
-        return true
-      },
-      
-      logout: () => set({ user: null, isAuthenticated: false }),
-      
-      updateBalance: (amount) => set((state) => ({
-        wallet: { ...state.wallet, balance: state.wallet.balance + amount },
-        balanceLastUpdated: Date.now()
-      })),
-      
-      setWallet: (wallet) => set({ wallet }),
-      
-      addTransaction: (transaction) => set((state) => ({
-        transactions: [transaction, ...state.transactions]
-      })),
-      
-      updateTransaction: (id, updates) => set((state) => ({
-        transactions: state.transactions.map(t => t.id === id ? { ...t, ...updates } : t)
-      })),
-      
-      deleteTransaction: (id) => set((state) => ({
-        transactions: state.transactions.filter(t => t.id !== id)
-      })),
-      
-      addContact: (contact) => set((state) => ({
-        contacts: [...state.contacts, contact]
-      })),
-      
-      updateContact: (id, updates) => set((state) => ({
-        contacts: state.contacts.map(c => c.id === id ? { ...c, ...updates } : c)
-      })),
-      
-      removeContact: (id) => set((state) => ({
-        contacts: state.contacts.filter(c => c.id !== id)
-      })),
-      
-      setSettings: (newSettings) => set((state) => ({
-        settings: { ...state.settings, ...newSettings }
-      })),
-      
-      updateSettings: (newSettings) => set((state) => ({
-        settings: { ...state.settings, ...newSettings }
-      })),
-      
+      setUser: (user) => set({ user, isAuthenticated: Boolean(user) }),
+      login: (user, token) => { setAuthToken(token); set({ user, isAuthenticated: true, isLoading: false }) },
+      logout: () => { setAuthToken(null); set({ user: null, isAuthenticated: false, transactions: [], contacts: [] }) },
+      updateBalance: (amount) => set((state) => ({ wallet: { ...state.wallet, balance: state.wallet.balance + amount }, balanceLastUpdated: Date.now() })),
+      setWallet: (wallet) => set({ wallet, balanceLastUpdated: Date.now() }),
+      setTransactions: (transactions) => set({ transactions }),
+      addTransaction: (transaction) => set((state) => ({ transactions: [transaction, ...state.transactions] })),
+      updateTransaction: (id, updates) => set((state) => ({ transactions: state.transactions.map(t => t.id === id ? { ...t, ...updates } : t) })),
+      deleteTransaction: (id) => set((state) => ({ transactions: state.transactions.filter(t => t.id !== id) })),
+      addContact: (contact) => set((state) => ({ contacts: [...state.contacts, contact] })),
+      updateContact: (id, updates) => set((state) => ({ contacts: state.contacts.map(c => c.id === id ? { ...c, ...updates } : c) })),
+      removeContact: (id) => set((state) => ({ contacts: state.contacts.filter(c => c.id !== id) })),
+      setSettings: (newSettings) => set((state) => ({ settings: { ...state.settings, ...newSettings } })),
+      updateSettings: (newSettings) => set((state) => ({ settings: { ...state.settings, ...newSettings } })),
       setLoading: (loading) => set({ isLoading: loading })
     }),
-    {
-      name: 'pika-storage',
-      partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-        settings: state.settings
-      })
-    }
+    { name: 'pika-storage', partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated, settings: state.settings }) }
   )
 )

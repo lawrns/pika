@@ -15,9 +15,10 @@
     "prisma:reset": "prisma migrate reset",
     "db:migrate": "prisma migrate deploy",
     "db:generate": "prisma generate",
-    "test": "jest",
+    "test": "node --test",
     "lint": "eslint src/",
-    "health": "curl -f http://localhost:8080/health || exit 1"
+    "health": "curl -f http://localhost:8080/health || exit 1",
+    "check": "node --check src/server.js && node --test"
   },
   "prisma": {
     "seed": "node --experimental-vm-modules prisma/seed.js"
@@ -49,6 +50,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^20.10.6"
+    "@types/node": "^20.10.6",
+    "supertest": "^6.3.4"
   }
 }
