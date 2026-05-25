@@ -12,7 +12,7 @@ export default function LandingPage() {
   return (
     <div className="w-full min-h-screen font-sans bg-muted/30 text-neutral-900 flex flex-col">
       {/* ── HERO SECTION ── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#120B24] via-primary/30 to-[#0B0517] text-white px-6 md:px-12 py-16 md:py-24 min-h-[640px] flex flex-col justify-between">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#7B2FF2] to-[#6015D1] text-white px-6 md:px-12 py-16 md:py-24 min-h-[640px] flex flex-col justify-between">
         <Confetti seed={4} density={80} />
 
         {/* Navigation */}
@@ -24,14 +24,14 @@ export default function LandingPage() {
             <a href="#trust" className="hover:text-white transition-colors">Seguridad</a>
             <button
               onClick={handleStart}
-              className="px-6 py-2.5 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-bold rounded-full shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              className="px-6 py-2.5 bg-[#22A952] hover:bg-[#1E9649] text-white font-bold rounded-full shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
             >
               Regístrate
             </button>
           </div>
           <button
             onClick={handleStart}
-            className="md:hidden px-5 py-2 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-bold rounded-full text-xs shadow-md"
+            className="md:hidden px-5 py-2 bg-[#22A952] hover:bg-[#1E9649] text-white font-bold rounded-full text-xs shadow-md"
           >
             Entrar
           </button>
@@ -44,11 +44,8 @@ export default function LandingPage() {
               <Star className="w-3.5 h-3.5 fill-current text-[#FFC52E] shrink-0" /> Capa P2P sin comisiones · México
             </span>
 
-            <h1 className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight mb-6">
-              Envía tu pago <br /> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-indigo-400">
-                con Pika
-              </span>
+            <h1 className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight mb-6 text-white">
+              Envía tu pago <br /> con Pika
             </h1>
 
             <p className="text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-xl mb-8 drop-shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
@@ -91,11 +88,11 @@ export default function LandingPage() {
           {/* Right Mascot Illustration */}
           <div className="md:col-span-5 hidden md:flex items-center justify-center relative min-h-[400px]">
             <div className="absolute right-0 top-12 transform rotate-12 scale-90">
-              <Heart size={80} color="#818CF8" />
+              <Heart size={80} color="#FFD23F" />
             </div>
 
             {/* Custom illustration placeholder */}
-            <div className="w-80 h-96 rounded-[32px] bg-white/5 border border-white/10 backdrop-blur flex flex-col items-center justify-center p-8 text-center text-white/70">
+            <div className="w-80 h-96 rounded-[32px] bg-white/10 border-2 border-white/20 border-dashed backdrop-blur flex flex-col items-center justify-center p-8 text-center text-white/70">
               <Smartphone className="w-16 h-16 text-white/80 mb-4" />
               <h3 className="font-bold text-lg text-white mb-2">Pika Social Layers</h3>
               <p className="text-xs text-white/75">
@@ -109,10 +106,10 @@ export default function LandingPage() {
       {/* ── HOW IT WORKS ── */}
       <section id="how-it-works" className="max-w-6xl mx-auto w-full py-20 px-6">
         <div className="text-center mb-16">
-          <span className="px-3 py-1.5 rounded-full bg-accent text-accent-foreground text-xs font-extrabold uppercase tracking-wider">
+          <span className="px-3 py-1.5 rounded-full bg-[#EFE4FF] text-[#6419D6] text-xs font-extrabold uppercase tracking-wider">
             ¿Cómo funciona?
           </span>
-          <h2 className="text-4xl md:text-5xl font-black font-display text-neutral-800 mt-4">
+          <h2 className="text-4xl md:text-5xl font-black font-display text-[#17102A] mt-4">
             Tres pasos. Cero drama.
           </h2>
           <p className="text-neutral-500 mt-2 max-w-md mx-auto">
@@ -126,31 +123,31 @@ export default function LandingPage() {
               step: '01',
               title: 'Crea el cobro',
               desc: 'Indica el monto y el concepto. Generas un link seguro en un tap.',
-              bg: 'bg-card border border-border',
-              text: 'text-primary',
+              bg: 'bg-[#FFF2BF]',
+              text: 'text-[#FF7A3D]',
             },
             {
               step: '02',
               title: 'Comparte por WhatsApp',
               desc: 'Manda el link a tu amigo. No necesita descargar ninguna app para pagarte.',
-              bg: 'bg-card border border-border',
-              text: 'text-primary',
+              bg: 'bg-[#EFE4FF]',
+              text: 'text-[#6419D6]',
             },
             {
               step: '03',
               title: 'Recibe en tu banco',
               desc: 'Tu amigo paga con SPEI o DiMo desde su banca móvil. Recibes directo y listo.',
-              bg: 'bg-card border border-border',
-              text: 'text-primary',
+              bg: 'bg-[#DDF8E7]',
+              text: 'text-[#22A952]',
             },
           ].map((s) => (
-            <div key={s.step} className={`${s.bg} rounded-[28px] p-8 min-h-[260px] flex flex-col justify-between shadow-md`}>
-              <div className={`font-display text-7xl font-black ${s.text} opacity-20`}>
+            <div key={s.step} className={`${s.bg} rounded-[28px] p-8 min-h-[260px] flex flex-col justify-between shadow-sm border border-black/5`}>
+              <div className={`font-display text-7xl font-black ${s.text} opacity-30`}>
                 {s.step}
               </div>
               <div>
-                <h3 className="text-xl font-extrabold text-neutral-800 mb-2">{s.title}</h3>
-                <p className="text-neutral-500 text-sm leading-relaxed">{s.desc}</p>
+                <h3 className="text-xl font-extrabold text-[#17102A] mb-2">{s.title}</h3>
+                <p className="text-neutral-600 text-sm leading-relaxed">{s.desc}</p>
               </div>
             </div>
           ))}
@@ -160,43 +157,43 @@ export default function LandingPage() {
       {/* ── COMMERCIAL BENEFIT ── */}
       <section id="benefits" className="max-w-6xl mx-auto w-full pb-20 px-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          <div className="md:col-span-7 bg-primary rounded-[32px] p-8 md:p-12 text-white flex flex-col justify-between min-h-[380px] shadow-md">
+          <div className="md:col-span-7 bg-[#FFC52E] rounded-[32px] p-8 md:p-12 text-[#17102A] flex flex-col justify-between min-h-[380px] shadow-md border border-neutral-300">
             <div>
-              <span className="inline-block px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider mb-6">
+              <span className="inline-block px-3 py-1 rounded-full bg-black/5 text-[#17102A] text-xs font-bold uppercase tracking-wider mb-6">
                 Amigos & Negocios
               </span>
               <h2 className="text-3xl md:text-5xl font-black font-display leading-[0.95] mb-4">
                 Cobra con un QR. <br /> Sin terminales.
               </h2>
-              <p className="text-sm md:text-base text-white/85 leading-relaxed max-w-lg mb-8">
+              <p className="text-sm md:text-base text-[#17102A]/80 leading-relaxed max-w-lg mb-8">
                 Divide la cuenta de la cena, cobra la renta o acepta pagos en tu negocio usando un QR Pika. Tus clientes pagan directamente desde su banco por SPEI o CoDi. Sin rentas mensuales ni comisiones abusivas.
               </p>
             </div>
             <div className="flex gap-4">
               <button
                 onClick={handleStart}
-                className="px-6 py-3 bg-white hover:bg-neutral-100 text-zinc-950 font-bold rounded-full text-sm shadow-md transition-all active:scale-95"
+                className="px-6 py-3 bg-[#17102A] hover:bg-[#2A2140] text-white font-bold rounded-full text-sm shadow-md transition-all active:scale-95"
               >
                 Comenzar ahora
               </button>
             </div>
           </div>
 
-          <div className="md:col-span-5 bg-card border border-border rounded-[32px] p-8 md:p-12 text-foreground flex flex-col justify-between min-h-[380px] shadow-md">
+          <div className="md:col-span-5 bg-[#17102A] rounded-[32px] p-8 md:p-12 text-white flex flex-col justify-between min-h-[380px] shadow-md">
             <div>
-              <span className="inline-block px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs font-bold uppercase tracking-wider mb-6">
+              <span className="inline-block px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider mb-6">
                 Cero Balances
               </span>
               <h2 className="text-3xl font-black font-display leading-[0.95] mb-4">
                 Pika no es un banco. <br /> Tampoco una wallet.
               </h2>
-              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed max-w-sm">
+              <p className="text-xs md:text-sm text-white/70 leading-relaxed max-w-sm">
                 No custodiamos tu dinero ni te obligamos a fonear saldos. Pika es una capa de orquestación inteligente que envía los cobros directo a la cuenta de banco que tú decidas.
               </p>
             </div>
-            <div className="p-5 rounded-2xl bg-muted border border-border flex items-center gap-4">
-              <Lock className="w-6 h-6 text-primary shrink-0" />
-              <div className="text-xs text-muted-foreground">
+            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4">
+              <Lock className="w-6 h-6 text-white shrink-0" />
+              <div className="text-xs text-white/80">
                 <strong>Pagos 100% regulados</strong>. Toda transacción fluye por los rieles oficiales de SPEI operados por tu banca móvil.
               </div>
             </div>
@@ -205,7 +202,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="mt-auto bg-zinc-950 text-white py-12 px-6 md:px-12">
+      <footer className="mt-auto bg-[#17102A] text-white py-12 px-6 md:px-12">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <PikaWordmark height={28} color="#fff" />
           <div className="flex gap-6 text-sm text-white/60">
