@@ -6,7 +6,7 @@ export interface ApiResponse<T> {
   message?: string
 }
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api').replace(/\/$/, '')
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
 const TOKEN_KEY = 'pika-auth-token'
 
 export function getAuthToken(): string | null {
