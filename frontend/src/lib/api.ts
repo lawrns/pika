@@ -27,7 +27,20 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<ApiR
 
     const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers })
     const payload = await res.json().catch(() => ({}))
-    if (!res.ok) return { error: payload.error || payload.message || `HTTP ${res.status}` }
+    if (!res.ok) {
+      if (payload.error === 'Validation failed' && payload.details) {
+        // Humanize common Joi error messages for registration password checks
+        return { 
+          error: payload.details.map((d: any) => {
+            if (d.field === 'password') {
+              return 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número';
+            }
+            return d.message;
+          }).join('. ') 
+        };
+      }
+      return { error: payload.error || payload.message || `HTTP ${res.status}` };
+    }
     return { data: payload as T, message: payload.message }
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Network request failed' }

@@ -116,8 +116,8 @@ export function RegisterPage() {
                 )}
               </button>
             </div>
-            <p className="text-[10px] text-white/60 font-semibold pl-1">
-              Debe tener al menos 8 caracteres de longitud.
+            <p className="text-[10px] text-white/60 font-semibold pl-1 leading-normal">
+              Debe tener al menos 8 caracteres, e incluir una mayúscula, una minúscula y un número.
             </p>
           </div>
 
