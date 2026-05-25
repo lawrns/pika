@@ -1,6 +1,6 @@
-import { PikaWordmark, Confetti, Heart } from '../pika/atoms';
+import { PikaWordmark, Heart } from '../pika/atoms';
 import { useNavigate } from 'react-router-dom';
-import { Zap, Smartphone, Lock, Star } from 'lucide-react';
+import { Smartphone, Lock, Star, ArrowRight } from 'lucide-react';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -12,8 +12,9 @@ export default function LandingPage() {
   return (
     <div className="w-full min-h-screen font-sans bg-muted/30 text-neutral-900 flex flex-col">
       {/* ── HERO SECTION ── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#4C1D95] via-[#2E1065] to-[#0F052D] text-white px-6 md:px-12 py-16 md:py-24 min-h-[640px] flex flex-col justify-between">
-        <Confetti seed={4} density={80} />
+      <section className="relative overflow-hidden bg-[#0E0B1F] text-white px-6 md:px-12 py-16 md:py-24 min-h-[640px] flex flex-col justify-between">
+        {/* Soft Radial Glow */}
+        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-[#7B2FF2]/15 rounded-full blur-[130px] pointer-events-none" />
 
         {/* Navigation */}
         <nav className="relative z-10 flex items-center justify-between max-w-6xl mx-auto w-full mb-12">
@@ -24,14 +25,14 @@ export default function LandingPage() {
             <a href="#trust" className="hover:text-white transition-colors">Seguridad</a>
             <button
               onClick={handleStart}
-              className="px-6 py-2.5 bg-white hover:bg-neutral-100 text-[#17102A] font-bold rounded-full shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              className="px-5 py-2 bg-white hover:bg-neutral-100 text-[#17102A] font-bold rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm"
             >
               Regístrate
             </button>
           </div>
           <button
             onClick={handleStart}
-            className="md:hidden px-5 py-2 border border-white/20 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full text-xs backdrop-blur shadow-sm"
+            className="md:hidden px-5 py-2 border border-white/20 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs backdrop-blur shadow-sm"
           >
             Entrar
           </button>
@@ -44,63 +45,89 @@ export default function LandingPage() {
               <Star className="w-3.5 h-3.5 fill-current text-[#FFC52E] shrink-0" /> Capa P2P sin comisiones · México
             </span>
 
-            <h1 className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight mb-6 text-white">
-              Envía tu pago <br /> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-indigo-400">
-                con Pika
-              </span>
+            <h1 className="font-display font-extrabold text-4xl md:text-6xl leading-[1.1] tracking-tight mb-6 text-white max-w-2xl">
+              Envía tu pago con Pika
             </h1>
 
-            <p className="text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-xl mb-8 drop-shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
+            <p className="text-lg md:text-xl lg:text-2xl text-white/80 leading-relaxed max-w-xl mb-8">
               La forma más fácil de cobrarle y pagarle a tus amigos al instante por SPEI o DiMo. Sin CLABE, sin comisiones y sin rollos.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-8">
               <button
                 onClick={handleStart}
-                className="px-8 py-4 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full text-lg shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 active:scale-95"
+                className="px-6 py-3.5 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-xl text-base shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 active:scale-95"
               >
-                Cobrar un Pika <Zap className="w-5 h-5 fill-current text-[#17102A] shrink-0" />
+                Cobrar un Pika <ArrowRight className="w-5 h-5 stroke-[2] shrink-0" />
               </button>
               <a
                 href="#how-it-works"
-                className="px-6 py-4 rounded-full border border-white/20 hover:bg-white/10 text-white font-bold text-base transition-all flex items-center justify-center backdrop-blur hover:border-white/35 active:scale-95"
+                className="px-6 py-3.5 rounded-xl border border-white/20 hover:bg-white/10 text-white font-bold text-base transition-all flex items-center justify-center backdrop-blur hover:border-white/35 active:scale-95"
               >
                 Ver cómo funciona
               </a>
             </div>
 
-            <div className="flex gap-8 text-white/80 text-xs md:text-sm">
+            <div className="flex gap-8 text-white/80 text-xs md:text-sm border-t border-white/10 pt-6 mt-8 w-full max-w-lg">
               <div>
                 <span className="block font-display text-lg md:text-2xl font-black text-white">0%</span>
-                Comisión P2P
+                <span className="text-white/50 text-xs">Comisión P2P</span>
               </div>
-              <div className="w-px h-8 bg-white/20 self-center" />
+              <div className="w-px h-8 bg-white/10 self-center" />
               <div>
                 <span className="block font-display text-lg md:text-2xl font-black text-white">1.4s</span>
-                Pago inmediato
+                <span className="text-white/50 text-xs">Pago inmediato</span>
               </div>
-              <div className="w-px h-8 bg-white/20 self-center" />
+              <div className="w-px h-8 bg-white/10 self-center" />
               <div>
                 <span className="block font-display text-lg md:text-2xl font-black text-white">Sin App</span>
-                Para el pagador
+                <span className="text-white/50 text-xs">Para el pagador</span>
               </div>
             </div>
           </div>
 
-          {/* Right Mascot Illustration */}
+          {/* Right Mascot Phone Mockup */}
           <div className="md:col-span-5 hidden md:flex items-center justify-center relative min-h-[400px]">
-            <div className="absolute right-0 top-12 transform rotate-12 scale-90">
+            <div className="absolute right-0 top-12 transform rotate-12 scale-90 opacity-20 pointer-events-none">
               <Heart size={80} color="#FFD23F" />
             </div>
 
-            {/* Custom illustration placeholder */}
-            <div className="w-80 h-96 rounded-[32px] bg-white/10 border-2 border-white/20 border-dashed backdrop-blur flex flex-col items-center justify-center p-8 text-center text-white/70">
-              <Smartphone className="w-16 h-16 text-white/80 mb-4" />
-              <h3 className="font-bold text-lg text-white mb-2">Pika Social Layers</h3>
-              <p className="text-xs text-white/75">
-                "Mándame un Pika"<br />comparte un enlace simple y recibe tus fondos de inmediato.
-              </p>
+            {/* Clean glassmorphism mockup panel */}
+            <div className="w-72 h-[380px] rounded-[28px] bg-white/5 border border-white/10 backdrop-blur-[16px] p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between text-left">
+              {/* Top Notch / Status Bar */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <PikaWordmark height={20} color="#fff" />
+                <span className="text-[10px] text-white/40 tracking-wider">SPEI LINK</span>
+              </div>
+
+              {/* Middle Pay Details */}
+              <div className="my-auto space-y-4">
+                <div>
+                  <span className="text-[11px] text-white/45 uppercase tracking-widest block mb-1">Monto a cobrar</span>
+                  <h2 className="text-3xl font-display font-black text-white">$150.00 <span className="text-xs text-white/50">MXN</span></h2>
+                </div>
+
+                <div className="bg-white/5 border border-white/5 rounded-xl p-3 space-y-2">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-white/40">De</span>
+                    <span className="text-white/80 font-semibold">Sofía Ruiz</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-white/40">Concepto</span>
+                    <span className="text-white/80">Cena de ayer</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Action Button */}
+              <div className="space-y-3">
+                <div className="w-full bg-[#FFC52E] text-[#17102A] text-xs font-bold rounded-xl py-3 text-center shadow-md">
+                  Pagar con SPEI o DiMo
+                </div>
+                <p className="text-[9px] text-white/40 text-center">
+                  Pagos directos a tu banco · 100% regulado
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -144,7 +171,7 @@ export default function LandingPage() {
               text: 'text-[#22A952]',
             },
           ].map((s) => (
-            <div key={s.step} className={`${s.bg} rounded-[28px] p-8 min-h-[260px] flex flex-col justify-between shadow-sm backdrop-blur`}>
+            <div key={s.step} className={`${s.bg} rounded-2xl p-8 min-h-[260px] flex flex-col justify-between shadow-sm backdrop-blur`}>
               <div className={`font-display text-7xl font-black ${s.text} opacity-40`}>
                 {s.step}
               </div>
@@ -175,7 +202,7 @@ export default function LandingPage() {
             <div className="flex gap-4">
               <button
                 onClick={handleStart}
-                className="px-6 py-3 bg-[#17102A] hover:bg-[#2A2140] text-white font-bold rounded-full text-sm shadow-md transition-all active:scale-95"
+                className="px-6 py-3 bg-[#17102A] hover:bg-[#2A2140] text-white font-bold rounded-xl text-sm shadow-md transition-all active:scale-95"
               >
                 Comenzar ahora
               </button>
