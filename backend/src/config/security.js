@@ -161,7 +161,10 @@ export default {
    * CORS configuration
    */
   cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+    origin: (origin, callback) => {
+      // Dynamically allow any origin to support Netlify preview branches, localhost, and custom domains with credentials
+      callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key']
