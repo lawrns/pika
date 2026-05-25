@@ -5,7 +5,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { walletApi } from '@/lib/api';
 import { 
   ArrowUpRight, ArrowDownLeft, Wallet, CreditCard, 
-  Banknote, Clock, AlertCircle, Plus, Minus, Loader2, Landmark, X
+  Banknote, Clock, AlertCircle, Plus, Minus, Loader2, Landmark, X, Zap, Shield
 } from 'lucide-react';
 
 export default function WalletPage() {
@@ -65,7 +65,7 @@ export default function WalletPage() {
       updateBalance(-amount);
       addTransaction(result.data.transaction);
       toast({ 
-        title: 'Retiro en proceso ⚡',
+        title: 'Retiro en proceso',
         description: `Se transferirán ${fmtMXN(amount)} a tu cuenta de banco vinculada.`
       });
       setIsWithdrawOpen(false);
@@ -87,14 +87,14 @@ export default function WalletPage() {
       </div>
 
       {/* ── CARD HERO ── */}
-      <div className="bg-gradient-to-br from-[#6419D6] via-[#7B2FF2] to-[#4F12B8] text-white rounded-[32px] p-8 relative overflow-hidden shadow-xl border border-[#7B2FF2]/20">
+      <div className="bg-gradient-to-br from-primary to-primary-glow text-white rounded-[32px] p-8 relative overflow-hidden shadow-xl border border-primary/20">
         <div className="absolute top-0 right-0 p-8 opacity-10">
           <Wallet className="h-40 w-40" />
         </div>
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           <div className="space-y-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-white/95 text-xs font-bold uppercase tracking-wider">
-              🛡 Balance Pika MXN
+              <Shield className="h-3.5 w-3.5 text-white shrink-0" /> Balance Pika MXN
             </span>
             <h2 className="text-5xl md:text-6xl font-black font-display tracking-tight leading-none mt-2">
               {fmtMXN(wallet.balance)}
@@ -113,7 +113,7 @@ export default function WalletPage() {
             </button>
             <button 
               onClick={() => setIsWithdrawOpen(true)}
-              className="px-6 py-3.5 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+              className="px-6 py-3.5 bg-white hover:bg-neutral-100 text-zinc-950 font-black rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
             >
               <Minus className="h-4 w-4 stroke-[3]" />
               Retirar SPEI
@@ -127,9 +127,9 @@ export default function WalletPage() {
         <div className="bg-white border border-black/5 rounded-[28px] p-6 shadow-sm flex items-center justify-between">
           <div>
             <span className="text-xs font-bold text-neutral-400 block mb-1">Cobrado este mes</span>
-            <span className="text-2xl font-black font-display text-[#22A952]">+{fmtMXN(3890)}</span>
+            <span className="text-2xl font-black font-display text-emerald-600">+{fmtMXN(3890)}</span>
           </div>
-          <span className="w-12 h-12 rounded-2xl bg-[#DDF8E7] text-[#22A952] flex items-center justify-center">
+          <span className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
             <ArrowDownLeft className="h-6 w-6 stroke-[2.5]" />
           </span>
         </div>
@@ -147,9 +147,9 @@ export default function WalletPage() {
         <div className="bg-white border border-black/5 rounded-[28px] p-6 shadow-sm flex items-center justify-between">
           <div>
             <span className="text-xs font-bold text-neutral-400 block mb-1">Cobros pendientes</span>
-            <span className="text-2xl font-black font-display text-[#FF7A3D]">{fmtMXN(420)}</span>
+            <span className="text-2xl font-black font-display text-amber-600">{fmtMXN(420)}</span>
           </div>
-          <span className="w-12 h-12 rounded-2xl bg-[#FFF2BF] text-[#FF7A3D] flex items-center justify-center">
+          <span className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
             <Clock className="h-6 w-6 stroke-[2.5]" />
           </span>
         </div>
@@ -158,7 +158,7 @@ export default function WalletPage() {
       {/* ── ACCOUNTS SECTION ── */}
       <div className="bg-white border border-black/5 rounded-[32px] p-8 shadow-sm space-y-6">
         <h3 className="text-lg font-black font-display text-neutral-800 flex items-center gap-2">
-          🏦 Métodos de cobro vinculados
+          <Landmark className="h-5 w-5 text-primary" /> Métodos de cobro vinculados
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center justify-between p-5 border border-neutral-100 rounded-2xl bg-neutral-50/50 hover:bg-neutral-50 transition-all">
@@ -198,7 +198,7 @@ export default function WalletPage() {
               <X className="w-4 h-4" />
             </button>
             <div className="text-center mb-6 flex flex-col items-center">
-              <Landmark className="w-10 h-10 text-[#7B2FF2] mb-2" />
+              <Landmark className="w-10 h-10 text-primary mb-2" />
               <h3 className="text-lg font-black text-neutral-800 mt-2">Añadir Fondos</h3>
               <p className="text-xs text-neutral-400 mt-1 font-semibold">
                 Deposita a tu balance Pika a través de una transferencia rápida SPEI.
@@ -206,7 +206,7 @@ export default function WalletPage() {
             </div>
             <div className="space-y-4">
               <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4">
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Monto a fondear (MXN)</label>
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Monto a fonear (MXN)</label>
                 <div className="relative flex items-center">
                   <span className="text-lg font-bold text-neutral-400 mr-1">$</span>
                   <input
@@ -218,7 +218,7 @@ export default function WalletPage() {
                   />
                 </div>
               </div>
-              <div className="bg-[#f7f5fa] p-3 rounded-xl text-[11px] text-neutral-500 font-semibold leading-relaxed flex gap-2 items-start">
+              <div className="bg-muted p-3 rounded-xl text-[11px] text-neutral-500 font-semibold leading-relaxed flex gap-2 items-start">
                 <AlertCircle className="h-4 w-4 text-neutral-400 shrink-0 mt-0.5" />
                 <p>La transferencia SPEI se acreditará de forma inmediata y automática en tu cuenta.</p>
               </div>
@@ -232,10 +232,12 @@ export default function WalletPage() {
                 <button 
                   onClick={handleAddFunds}
                   disabled={!addAmount || isLoading}
-                  className="flex-1 py-3 bg-[#FFC52E] hover:bg-[#FFD65C] disabled:bg-neutral-100 disabled:text-neutral-400 text-[#17102A] font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
+                  className="flex-1 py-3 bg-primary hover:bg-primary/90 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
                 >
                   {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  Fondear ⚡
+                  <span className="flex items-center gap-1">
+                    Fondear <Zap className="h-3.5 w-3.5 shrink-0 fill-current text-white" />
+                  </span>
                 </button>
               </div>
             </div>
@@ -254,7 +256,7 @@ export default function WalletPage() {
               <X className="w-4 h-4" />
             </button>
             <div className="text-center mb-6 flex flex-col items-center">
-              <Landmark className="w-10 h-10 text-[#7B2FF2] mb-2" />
+              <Landmark className="w-10 h-10 text-primary mb-2" />
               <h3 className="text-lg font-black text-neutral-800 mt-2">Retirar Fondos SPEI</h3>
               <p className="text-xs text-neutral-400 mt-1 font-semibold">
                 Retira directo a tu cuenta bancaria vinculada de forma instantánea.
@@ -277,7 +279,7 @@ export default function WalletPage() {
                   Saldo disponible: {fmtMXN(wallet.balance)}
                 </p>
               </div>
-              <div className="bg-[#f7f5fa] p-3 rounded-xl text-[11px] text-neutral-500 font-semibold leading-relaxed flex gap-2 items-start">
+              <div className="bg-muted p-3 rounded-xl text-[11px] text-neutral-500 font-semibold leading-relaxed flex gap-2 items-start">
                 <Clock className="h-4 w-4 text-neutral-400 shrink-0 mt-0.5" />
                 <p>Las transferencias de salida fluyen en tiempo real por el sistema de SPEI Banxico.</p>
               </div>
@@ -291,10 +293,12 @@ export default function WalletPage() {
                 <button 
                   onClick={handleWithdraw}
                   disabled={!withdrawAmount || isLoading}
-                  className="flex-1 py-3 bg-[#FFC52E] hover:bg-[#FFD65C] disabled:bg-neutral-100 disabled:text-neutral-400 text-[#17102A] font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
+                  className="flex-1 py-3 bg-primary hover:bg-primary/90 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
                 >
                   {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  Retirar ⚡
+                  <span className="flex items-center gap-1">
+                    Retirar <Zap className="h-3.5 w-3.5 shrink-0 fill-current text-white" />
+                  </span>
                 </button>
               </div>
             </div>

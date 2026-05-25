@@ -6,7 +6,7 @@ import { qrApi } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
 import { 
   QrCode, Scan, Download, Share2, Clock, Check,
-  Camera, X, Wallet, History, AlertCircle, Loader2
+  Camera, X, Wallet, History, AlertCircle, Loader2, Zap
 } from 'lucide-react';
 import QRCodeLib from 'qrcode';
 
@@ -84,7 +84,7 @@ export default function QRPage() {
         expiresAt: qrResult.expiresAt
       }, ...prev]);
       
-      toast({ title: '¡Código QR de cobro creado! ⚡' });
+      toast({ title: '¡Código QR de cobro creado!' });
     }
     setIsGenerating(false);
   };
@@ -114,7 +114,7 @@ export default function QRPage() {
       }
     } else {
       navigator.clipboard.writeText(`https://pika-mx.netlify.app/pay/usr_${user?.email || 'mariana'}`);
-      toast({ title: '¡Enlace de cobro copiado al portapapeles! 🔗' });
+      toast({ title: '¡Enlace de cobro copiado al portapapeles!' });
     }
   };
 
@@ -133,7 +133,7 @@ export default function QRPage() {
       type: 'pika_payment',
       id: 'pay-demo-' + Date.now(),
       amount: 150,
-      description: 'Cena Contramar 🐟',
+      description: 'Cena Contramar',
       recipient: 'mariana@pika.mx'
     });
     
@@ -150,7 +150,7 @@ export default function QRPage() {
       
       if (result.data.action === 'payment') {
         toast({ 
-          title: '¡Código QR de pago detectado! ⚡',
+          title: '¡Código QR de pago detectado!',
           description: `Monto detectado: ${fmtMXN(result.data.amount || 0)}`
         });
       }
@@ -173,7 +173,7 @@ export default function QRPage() {
           <button
             onClick={() => setActiveTab('scan')}
             className={`flex-1 py-3.5 rounded-full text-xs font-black flex items-center justify-center gap-2 transition-all ${
-              activeTab === 'scan' ? 'bg-[#7B2FF2] text-white shadow' : 'text-neutral-600 hover:text-neutral-900'
+              activeTab === 'scan' ? 'bg-primary text-white shadow' : 'text-neutral-600 hover:text-neutral-900'
             }`}
           >
             <Scan className="h-4 w-4" />
@@ -182,7 +182,7 @@ export default function QRPage() {
           <button
             onClick={() => setActiveTab('generate')}
             className={`flex-1 py-3.5 rounded-full text-xs font-black flex items-center justify-center gap-2 transition-all ${
-              activeTab === 'generate' ? 'bg-[#7B2FF2] text-white shadow' : 'text-neutral-600 hover:text-neutral-900'
+              activeTab === 'generate' ? 'bg-primary text-white shadow' : 'text-neutral-600 hover:text-neutral-900'
             }`}
           >
             <QrCode className="h-4 w-4" />
@@ -196,11 +196,11 @@ export default function QRPage() {
               <div className="bg-white border border-black/5 rounded-[32px] p-6 shadow-sm">
                 <div className="relative aspect-square max-w-xs mx-auto overflow-hidden rounded-2xl bg-neutral-950 flex items-center justify-center">
                   <div className="w-48 h-48 border-2 border-white/20 rounded-2xl relative">
-                    <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-[#7B2FF2]" />
-                    <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-[#7B2FF2]" />
-                    <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-[#7B2FF2]" />
-                    <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-[#7B2FF2]" />
-                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#7B2FF2] animate-pulse" />
+                    <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-primary" />
+                    <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-primary" />
+                    <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-primary" />
+                    <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-primary" />
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary animate-pulse" />
                   </div>
                   <div className="absolute bottom-4 left-0 right-0 text-center text-white/80 text-[10px] font-bold uppercase tracking-wider">
                     Apunta la cámara al código QR
@@ -215,9 +215,9 @@ export default function QRPage() {
                 <div className="mt-6 flex gap-3">
                   <button 
                     onClick={simulateScan}
-                    className="flex-1 py-3 bg-[#EFE4FF] text-[#7B2FF2] hover:bg-[#7B2FF2]/10 font-bold rounded-full text-xs transition-all active:scale-95"
+                    className="flex-1 py-3 bg-primary/10 text-primary hover:bg-primary/20 font-bold rounded-full text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5"
                   >
-                    Simular escaneo ⚡
+                    Simular escaneo <Zap className="h-3.5 w-3.5 text-primary shrink-0" />
                   </button>
                   <button 
                     onClick={stopScanning}
@@ -230,7 +230,7 @@ export default function QRPage() {
             ) : scannedData && scanResult ? (
               <div className="bg-white border border-black/5 rounded-[32px] p-6 shadow-sm space-y-6">
                 <div className="text-center p-6 bg-neutral-50 border border-neutral-100 rounded-2xl flex flex-col items-center">
-                  <span className="w-10 h-10 rounded-full bg-[#DDF8E7] text-[#22A952] flex items-center justify-center mb-3">
+                  <span className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3">
                     <Check className="h-5 w-5 stroke-[3]" />
                   </span>
                   <h4 className="text-xs font-extrabold uppercase tracking-wider text-neutral-400">Solicitud QR de pago</h4>
@@ -250,10 +250,10 @@ export default function QRPage() {
                   {scanResult.action === 'payment' && (
                     <button 
                       onClick={() => navigate(`/dashboard/send?to=contact-demo&amount=${scanResult.amount}&concept=${encodeURIComponent(scanResult.description || '')}`)}
-                      className="flex-1 py-4 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                      className="flex-1 py-4 bg-primary hover:bg-primary/90 text-white font-black rounded-full text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5"
                     >
                       <Wallet className="h-4 w-4 shrink-0" />
-                      Pagar ahora ⚡
+                      <span>Pagar ahora</span> <Zap className="h-3.5 w-3.5 text-white shrink-0 fill-current" />
                     </button>
                   )}
                   <button 
@@ -275,7 +275,7 @@ export default function QRPage() {
                 </p>
                 <button 
                   onClick={startScanning}
-                  className="w-full py-4 bg-[#7B2FF2] hover:bg-[#6419D6] text-white font-bold rounded-full text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-primary hover:bg-primary/95 text-white font-bold rounded-full text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
                   <Camera className="h-4 w-4 stroke-[3.5]" />
                   Iniciar cámara scanner
@@ -319,7 +319,7 @@ export default function QRPage() {
                 <button 
                   onClick={handleGenerateQR}
                   disabled={isGenerating}
-                  className="w-full py-4 bg-[#FFC52E] hover:bg-[#FFD65C] disabled:bg-neutral-100 disabled:text-neutral-400 text-[#17102A] font-black rounded-full text-sm shadow transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                  className="w-full py-4 bg-primary hover:bg-primary/90 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-sm shadow transition-all active:scale-95 flex items-center justify-center gap-1.5"
                 >
                   {isGenerating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Generar mi código QR
@@ -378,7 +378,7 @@ export default function QRPage() {
             {qrHistory.length > 0 && (
               <div className="bg-white border border-black/5 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4 md:col-span-2">
                 <h3 className="text-base font-extrabold text-neutral-800 flex items-center gap-2">
-                  <History className="h-5 w-5 text-[#7B2FF2]" />
+                  <History className="h-5 w-5 text-primary" />
                   Códigos QR Recientes
                 </h3>
                 <div className="divide-y divide-neutral-100 bg-neutral-50/20 border border-neutral-100 rounded-2xl overflow-hidden">
@@ -400,7 +400,7 @@ export default function QRPage() {
                           {formatDate(item.createdAt)}
                         </p>
                         <span className={`inline-block text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                          new Date(item.expiresAt) > new Date() ? 'bg-[#DDF8E7] text-[#22A952]' : 'bg-neutral-100 text-neutral-500'
+                          new Date(item.expiresAt) > new Date() ? 'bg-emerald-500/10 text-emerald-600' : 'bg-neutral-100 text-neutral-500'
                         }`}>
                           {new Date(item.expiresAt) > new Date() ? 'Activo' : 'Expirado'}
                         </span>

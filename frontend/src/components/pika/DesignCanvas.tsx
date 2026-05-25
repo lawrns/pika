@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, createContext, useMemo } from 'react';
+import { Minus, Plus } from 'lucide-react';
 
 // Design Canvas Context
 interface DCCtxType {
@@ -162,15 +163,17 @@ export function DesignCanvas({
           <button
             onClick={() => api.setZoom(scale - 0.15)}
             className="p-1 rounded hover:bg-neutral-100 active:scale-90"
+            aria-label="Zoom out"
           >
-            ➖
+            <Minus className="h-3.5 w-3.5" />
           </button>
           <span>{Math.round(scale * 100)}%</span>
           <button
             onClick={() => api.setZoom(scale + 0.15)}
             className="p-1 rounded hover:bg-neutral-100 active:scale-90"
+            aria-label="Zoom in"
           >
-            ➕
+            <Plus className="h-3.5 w-3.5" />
           </button>
           <div className="w-px h-4 bg-neutral-200" />
           <button

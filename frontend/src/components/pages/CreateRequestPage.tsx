@@ -41,9 +41,17 @@ export default function CreateRequestPage() {
     if (numAmount <= 0 || !concept) return;
 
     try {
+      const token = localStorage.getItem('pika-auth-token');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/requests', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           amountCents: Math.round(numAmount * 100),
           concept,
@@ -84,7 +92,7 @@ export default function CreateRequestPage() {
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'del'];
 
   return (
-    <div className="w-full min-h-screen bg-[#f7f5fa] text-neutral-900 flex flex-col justify-between pb-12">
+    <div className="w-full min-h-screen text-neutral-900 flex flex-col justify-between pb-12 bg-transparent">
       {/* ── HEADER ── */}
       <header className="px-6 pt-12 pb-4 flex items-center justify-between border-b border-neutral-200 bg-white">
         <button

@@ -5,7 +5,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { contactsApi } from '@/lib/api';
 import { 
   Search, UserPlus, Star, Mail, Phone,
-  Edit, Trash2, Loader2, X, Users
+  Edit, Trash2, Loader2, X, Users, User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -62,10 +62,10 @@ export default function ContactsPage() {
     if (result.data) {
       if (isEdit) {
         updateContact(selectedContact!.id, result.data);
-        toast({ title: '¡Contacto actualizado con éxito! ⚡' });
+        toast({ title: '¡Contacto actualizado con éxito!' });
       } else {
         addContact(result.data);
-        toast({ title: '¡Contacto guardado con éxito! ⚡' });
+        toast({ title: '¡Contacto guardado con éxito!' });
       }
       setIsAddOpen(false);
       setIsEditOpen(false);
@@ -97,13 +97,13 @@ export default function ContactsPage() {
   const ContactCard = ({ contact }: { contact: Contact }) => (
     <div className="flex items-center justify-between p-4 bg-neutral-50/50 hover:bg-neutral-50 border border-neutral-100 rounded-2xl transition-all group">
       <div className="flex items-center gap-3.5 min-w-0">
-        <span className="w-12 h-12 rounded-xl bg-[#EFE4FF] text-[#7B2FF2] font-black flex items-center justify-center text-sm shrink-0">
+        <span className="w-12 h-12 rounded-xl bg-primary/10 text-primary font-black flex items-center justify-center text-sm shrink-0">
           {contact.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
         </span>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <p className="font-extrabold text-sm text-neutral-800 truncate">{contact.name}</p>
-            {contact.isFavorite && <Star className="h-3 w-3 fill-[#FFC52E] text-[#FFC52E] shrink-0" />}
+            {contact.isFavorite && <Star className="h-3 w-3 fill-amber-500 text-amber-500 shrink-0" />}
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-neutral-400 font-semibold mt-0.5">
             {contact.phone && (
@@ -128,7 +128,7 @@ export default function ContactsPage() {
         >
           <Star className={cn(
             "h-4 w-4 transition-all",
-            contact.isFavorite ? "fill-[#FFC52E] text-[#FFC52E]" : "text-neutral-400"
+            contact.isFavorite ? "fill-amber-500 text-amber-500" : "text-neutral-400"
           )} />
         </button>
         <button
@@ -160,7 +160,7 @@ export default function ContactsPage() {
         </div>
         <button
           onClick={handleOpenAdd}
-          className="px-6 py-3.5 bg-[#7B2FF2] hover:bg-[#6419D6] text-white font-bold rounded-full text-xs shadow-md transition-all active:scale-95 flex items-center gap-2"
+          className="px-6 py-3.5 bg-primary hover:bg-primary/95 text-white font-bold rounded-full text-xs shadow-md transition-all active:scale-95 flex items-center gap-2"
         >
           <UserPlus className="h-4 w-4 stroke-[3.5]" />
           Nuevo Contacto
@@ -182,14 +182,14 @@ export default function ContactsPage() {
 
       {contacts.length === 0 ? (
         <div className="bg-white border border-black/5 rounded-[32px] p-12 text-center flex flex-col items-center max-w-md mx-auto">
-          <Users className="w-12 h-12 text-[#EFE4FF] mb-3" />
+          <Users className="w-12 h-12 text-primary/25 mb-3" />
           <h4 className="text-sm font-extrabold text-neutral-700">Aún no tienes contactos</h4>
           <p className="text-xs text-neutral-400 leading-relaxed font-semibold max-w-xs mt-1 mb-6">
             Agrega tu primer contacto para poder enviarle lana o mandarle un enlace de cobro al instante.
           </p>
           <button
             onClick={handleOpenAdd}
-            className="w-full py-3.5 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full text-xs shadow transition-all active:scale-95 flex items-center justify-center gap-1.5"
+            className="w-full py-3.5 bg-primary hover:bg-primary/90 text-white font-black rounded-full text-xs shadow transition-all active:scale-95 flex items-center justify-center gap-1.5"
           >
             <UserPlus className="h-4 w-4 stroke-[3.5]" />
             Agregar mi primer contacto
@@ -200,7 +200,7 @@ export default function ContactsPage() {
           {favoriteContacts.length > 0 && (
             <div className="bg-white border border-black/5 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4">
               <h3 className="text-base font-extrabold text-neutral-800 flex items-center gap-2">
-                <Star className="h-5 w-5 fill-[#FFC52E] text-[#FFC52E]" />
+                <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
                 Favoritos ({favoriteContacts.length})
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -236,8 +236,8 @@ export default function ContactsPage() {
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="text-center mb-6">
-              <span className="text-3xl">👤</span>
+            <div className="text-center mb-6 flex flex-col items-center">
+              <User className="h-10 w-10 text-primary mb-2" />
               <h3 className="text-lg font-black text-neutral-800 mt-2">Nuevo Contacto</h3>
               <p className="text-xs text-neutral-400 mt-1 font-semibold">
                 Completa los datos para vincular el contacto en Pika.
@@ -292,7 +292,7 @@ export default function ContactsPage() {
               <button 
                 onClick={() => handleSubmit(false)}
                 disabled={!formData.name || isLoading}
-                className="flex-1 py-3 bg-[#FFC52E] hover:bg-[#FFD65C] disabled:bg-neutral-100 disabled:text-neutral-400 text-[#17102A] font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
+                className="flex-1 py-3 bg-primary hover:bg-primary/90 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
               >
                 {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Guardar contacto
@@ -312,8 +312,8 @@ export default function ContactsPage() {
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="text-center mb-6">
-              <span className="text-3xl">👤</span>
+            <div className="text-center mb-6 flex flex-col items-center">
+              <User className="h-10 w-10 text-primary mb-2" />
               <h3 className="text-lg font-black text-neutral-800 mt-2">Editar Contacto</h3>
               <p className="text-xs text-neutral-400 mt-1 font-semibold">
                 Actualiza la información del contacto.
@@ -368,7 +368,7 @@ export default function ContactsPage() {
               <button 
                 onClick={() => handleSubmit(true)}
                 disabled={!formData.name || isLoading}
-                className="flex-1 py-3 bg-[#FFC52E] hover:bg-[#FFD65C] disabled:bg-neutral-100 disabled:text-neutral-400 text-[#17102A] font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
+                className="flex-1 py-3 bg-primary hover:bg-primary/90 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
               >
                 {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Guardar cambios

@@ -19,6 +19,7 @@ import {
   Users
 } from "lucide-react"
 import { useAppStore } from "@/store"
+import { PikaMark, Avatar } from "../pika/atoms"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   isCollapsed?: boolean
@@ -48,9 +49,9 @@ export function Sidebar({ className, isCollapsed }: SidebarProps) {
         <div className="px-4 py-2">
           <Link to="/dashboard" className="flex items-center gap-2 px-2">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">P</span>
+              <PikaMark size={20} color="#fff" />
             </div>
-            {!isCollapsed && <span className="font-bold text-xl">Pika</span>}
+            {!isCollapsed && <span className="font-bold text-xl tracking-tight">Pika</span>}
           </Link>
         </div>
         
@@ -107,9 +108,7 @@ export function Sidebar({ className, isCollapsed }: SidebarProps) {
       
       <div className="px-4 py-4 border-t">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-            <User className="h-4 w-4 text-muted-foreground" />
-          </div>
+          <Avatar name={user?.name || user?.email || 'Guest'} size={32} />
           {!isCollapsed && (
             <>
               <div className="flex-1 min-w-0">
@@ -171,14 +170,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <Sidebar />
       </aside>
       
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#f7f5fa]">
         <header className="md:hidden flex items-center justify-between px-4 py-3 border-b bg-background sticky top-0 z-30">
           <div className="flex items-center gap-2">
             <MobileSidebar />
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">P</span>
+              <PikaMark size={20} color="#fff" />
             </div>
-            <span className="font-bold text-lg">{getPageTitle()}</span>
+            <span className="font-bold text-lg tracking-tight">{getPageTitle()}</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild>
@@ -189,7 +188,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </header>
         
-        <main className={cn("flex-1 overflow-auto", !isDashboardHome && "p-4 md:p-8")}>
+        <main className={cn("flex-1 overflow-auto bg-[#f7f5fa]", !isDashboardHome && "p-4 md:p-8")}>
           <div className={cn("mx-auto", !isDashboardHome && "max-w-7xl")}>
             {children}
           </div>

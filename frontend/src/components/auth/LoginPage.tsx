@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useAppStore } from "@/store"
 import { authApi } from "@/lib/api"
-import { Eye, EyeOff, Loader2, KeyRound, Mail, ArrowRight } from "lucide-react"
+import { Eye, EyeOff, Loader2, KeyRound, Mail, ArrowRight, Zap } from "lucide-react"
 import { PikaWordmark, Confetti } from "@/components/pika/atoms"
 
 export function LoginPage() {
@@ -35,16 +35,16 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#6419D6] via-[#7B2FF2] to-[#4F12B8] p-4 relative overflow-hidden font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-indigo-950/40 to-zinc-950 p-4 relative overflow-hidden font-sans">
       {/* Confetti layout layer */}
       <Confetti seed={12} density={70} />
 
       {/* Background ambient light */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-[#FFC52E]/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] rounded-full bg-[#FF3D8A]/10 blur-[130px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] rounded-full bg-indigo-500/10 blur-[130px] pointer-events-none" />
 
       {/* Main glass card */}
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-[32px] p-8 shadow-2xl relative z-10 text-white animate-fade-in">
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-2xl relative z-10 text-white animate-fade-in">
         <div className="flex flex-col items-center mb-8">
           <PikaWordmark height={40} color="#fff" />
           <h2 className="text-3xl font-black font-display text-center tracking-tight mt-6 mb-1 text-white">
@@ -109,13 +109,13 @@ export function LoginPage() {
                 id="remember"
                 checked={rememberMe}
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                className="border-white/20 data-[state=checked]:bg-[#FFC52E] data-[state=checked]:text-[#17102A]"
+                className="border-white/20 data-[state=checked]:bg-white data-[state=checked]:text-zinc-950"
               />
               <Label htmlFor="remember" className="text-white/95 hover:text-white cursor-pointer select-none">
                 Recordar sesión
               </Label>
             </div>
-            <Link to="/forgot-password" className="text-[#FFC52E] hover:text-[#ffd361] hover:underline transition-colors">
+            <Link to="/forgot-password" className="text-white/80 hover:text-white hover:underline transition-colors">
               ¿Olvidaste tu contraseña?
             </Link>
           </div>
@@ -131,14 +131,14 @@ export function LoginPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-[#FFC52E] hover:bg-[#FFD65C] active:scale-[0.98] disabled:bg-white/10 disabled:text-white/40 text-[#17102A] font-black rounded-full shadow-lg hover:shadow-[#FFC52E]/10 transition-all flex items-center justify-center gap-2 text-sm"
+              className="w-full h-12 bg-white hover:bg-white/90 active:scale-[0.98] disabled:bg-white/10 disabled:text-white/40 text-zinc-950 font-black rounded-full shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin text-[#17102A]" />
+                <Loader2 className="h-4 w-4 animate-spin text-zinc-950" />
               ) : (
-                <>
-                  Iniciar sesión ⚡
-                </>
+                <span className="flex items-center gap-1.5">
+                  Iniciar sesión <Zap className="h-4 w-4 shrink-0 fill-current text-zinc-950" />
+                </span>
               )}
             </Button>
           </div>
@@ -147,7 +147,7 @@ export function LoginPage() {
         <div className="mt-8 pt-6 border-t border-white/10 text-center text-xs font-semibold">
           <p className="text-white/70">
             ¿Aún no tienes cuenta?{" "}
-            <Link to="/register" className="text-[#FFC52E] hover:text-[#ffd361] font-black inline-flex items-center gap-0.5 hover:underline ml-1">
+            <Link to="/register" className="text-white hover:underline font-black inline-flex items-center gap-0.5 ml-1">
               Regístrate gratis <ArrowRight className="w-3 h-3" />
             </Link>
           </p>

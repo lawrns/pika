@@ -7,7 +7,7 @@ import { walletApi } from '@/lib/api';
 import { fmtMXN } from '../pika/atoms';
 import { 
   Search, UserPlus, Users, ArrowRight, CheckCircle2,
-  Star, Loader2, QrCode, Wallet, X, MessageSquare, Landmark, Check
+  Star, Loader2, QrCode, Wallet, X, MessageSquare, Landmark, Check, Zap
 } from 'lucide-react';
 
 const quickAmounts = [50, 100, 200, 500, 1000, 2000];
@@ -116,7 +116,7 @@ export default function SendPage() {
         {/* Recipient Selection */}
         <div className="bg-white border border-black/5 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
           <h3 className="text-base font-extrabold text-neutral-800 flex items-center gap-2">
-            <Users className="h-5 w-5 text-[#7B2FF2]" />
+            <Users className="h-5 w-5 text-primary" />
             Selecciona el Destinatario
           </h3>
 
@@ -131,9 +131,9 @@ export default function SendPage() {
           </div>
 
           {selectedContact ? (
-            <div className="p-4 border border-[#7B2FF2]/10 rounded-2xl bg-[#EFE4FF]/30 flex items-center justify-between">
+            <div className="p-4 border border-primary/15 rounded-2xl bg-primary/5 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="w-12 h-12 rounded-xl bg-[#7B2FF2] text-white font-extrabold flex items-center justify-center text-sm">
+                <span className="w-12 h-12 rounded-xl bg-primary text-white font-extrabold flex items-center justify-center text-sm">
                   {selectedContact.name.charAt(0)}
                 </span>
                 <div>
@@ -145,7 +145,7 @@ export default function SendPage() {
               </div>
               <button 
                 onClick={() => setSelectedContact(null)}
-                className="text-xs font-bold text-[#7B2FF2] hover:underline"
+                className="text-xs font-bold text-primary hover:underline"
               >
                 Cambiar
               </button>
@@ -162,7 +162,7 @@ export default function SendPage() {
                         onClick={() => handleContactSelect(contact)}
                         className="flex items-center gap-3 p-3 rounded-2xl border border-neutral-100 hover:bg-neutral-50 transition-all text-left w-full"
                       >
-                        <span className="w-8 h-8 rounded-lg bg-[#EFE4FF] text-[#7B2FF2] font-black flex items-center justify-center text-xs shrink-0">
+                        <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary font-black flex items-center justify-center text-xs shrink-0">
                           {contact.name.charAt(0)}
                         </span>
                         <div className="min-w-0">
@@ -193,7 +193,7 @@ export default function SendPage() {
                           <p className="text-[10px] text-neutral-400 font-semibold mt-0.5">{contact.accountNumber || contact.phone}</p>
                         </div>
                       </div>
-                      {contact.isFavorite && <Star className="h-3 w-3 fill-[#FFC52E] text-[#FFC52E]" />}
+                      {contact.isFavorite && <Star className="h-3 w-3 fill-amber-500 text-amber-500" />}
                     </button>
                   ))}
                 </div>
@@ -205,7 +205,7 @@ export default function SendPage() {
         {/* Payment Details */}
         <div className="bg-white border border-black/5 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
           <h3 className="text-base font-extrabold text-neutral-800 flex items-center gap-2">
-            <Wallet className="h-5 w-5 text-[#7B2FF2]" />
+            <Wallet className="h-5 w-5 text-primary" />
             Detalles de Envío
           </h3>
 
@@ -231,7 +231,7 @@ export default function SendPage() {
                 onClick={() => handleAmountSelect(value)}
                 className={`py-2 text-xs font-bold rounded-full border transition-all ${
                   amount === value.toString()
-                    ? 'bg-[#7B2FF2] text-white border-transparent'
+                    ? 'bg-primary text-primary-foreground border-transparent'
                     : 'bg-neutral-50 hover:bg-neutral-100 border-neutral-200 text-neutral-600'
                 }`}
               >
@@ -251,7 +251,7 @@ export default function SendPage() {
           </div>
 
           {selectedContact && amount && (
-            <div className="p-4 bg-[#f7f5fa] rounded-2xl space-y-2.5 text-xs font-semibold text-neutral-600">
+            <div className="p-4 bg-muted rounded-2xl space-y-2.5 text-xs font-semibold text-neutral-600">
               <div className="flex justify-between">
                 <span className="text-neutral-400">Para</span>
                 <span className="font-extrabold text-neutral-800">{selectedContact.name}</span>
@@ -262,7 +262,7 @@ export default function SendPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-neutral-400">Comisión</span>
-                <span className="font-extrabold text-[#22A952]">¡Gratis!</span>
+                <span className="font-extrabold text-emerald-600">¡Gratis!</span>
               </div>
               <div className="pt-2 border-t border-neutral-200 flex justify-between text-sm">
                 <span className="font-black text-neutral-700">Total a transferir</span>
@@ -274,7 +274,7 @@ export default function SendPage() {
           <button 
             onClick={handleContinue}
             disabled={!selectedContact || !amount || parseFloat(amount) <= 0}
-            className="w-full py-4 bg-[#FFC52E] hover:bg-[#FFD65C] disabled:bg-neutral-100 disabled:text-neutral-400 text-[#17102A] font-black rounded-full text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5"
+            className="w-full py-4 bg-primary hover:bg-primary/95 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5"
           >
             Continuar
             <ArrowRight className="h-4 w-4 stroke-[3]" />
@@ -285,7 +285,7 @@ export default function SendPage() {
       {/* QR scanner redirect banner */}
       <div className="bg-white border border-dashed border-neutral-300 rounded-[32px] p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-4 text-left">
-          <span className="w-12 h-12 rounded-2xl bg-[#EFE4FF] text-[#7B2FF2] flex items-center justify-center shrink-0">
+          <span className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <QrCode className="h-6 w-6 stroke-[2]" />
           </span>
           <div>
@@ -314,14 +314,14 @@ export default function SendPage() {
               <X className="w-4 h-4" />
             </button>
             <div className="text-center mb-6 flex flex-col items-center">
-              <Landmark className="w-10 h-10 text-[#7B2FF2] mb-2" />
+              <Landmark className="w-10 h-10 text-primary mb-2" />
               <h3 className="text-lg font-black text-neutral-800 mt-2">Confirmar Transferencia</h3>
               <p className="text-xs text-neutral-400 mt-1 font-semibold">
                 Por seguridad, valida los datos antes de realizar el envío SPEI.
               </p>
             </div>
             <div className="py-2 space-y-3.5 text-xs font-semibold text-neutral-600">
-              <div className="text-center bg-[#f7f5fa] rounded-2xl py-4 mb-4">
+              <div className="text-center bg-muted rounded-2xl py-4 mb-4">
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Monto a Enviar</span>
                 <span className="text-3xl font-black font-display text-neutral-800">{fmtMXN(parseFloat(amount) || 0)}</span>
               </div>
@@ -351,10 +351,12 @@ export default function SendPage() {
               <button 
                 onClick={handleSend}
                 disabled={isLoading}
-                className="flex-1 py-3 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
+                className="flex-1 py-3 bg-primary hover:bg-primary/90 text-white font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
               >
                 {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                Enviar Pago ⚡
+                <span className="flex items-center gap-1">
+                  Enviar Pago <Zap className="w-3.5 h-3.5 shrink-0 fill-current text-white" />
+                </span>
               </button>
             </div>
           </div>
@@ -365,8 +367,8 @@ export default function SendPage() {
       {isSuccessOpen && (
         <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm z-50 flex items-center justify-center px-6">
           <div className="bg-white rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative border border-neutral-100 text-center flex flex-col items-center">
-            <div className="w-16 h-16 bg-[#DDF8E7] rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-              <Check className="h-8 w-8 text-[#22A952] stroke-[3]" />
+            <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+              <Check className="h-8 w-8 text-emerald-600 stroke-[3]" />
             </div>
             <h3 className="text-xl font-black font-display text-neutral-800 mb-1">¡Transferencia Exitosa!</h3>
             <p className="text-xs text-neutral-400 font-semibold mb-4 leading-relaxed max-w-xs">
@@ -375,7 +377,7 @@ export default function SendPage() {
             <div className="w-full space-y-2 mt-4">
               <button 
                 onClick={handleSuccessClose} 
-                className="w-full py-3.5 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full text-xs shadow transition-all active:scale-95"
+                className="w-full py-3.5 bg-primary hover:bg-primary/90 text-white font-black rounded-full text-xs shadow transition-all active:scale-95"
               >
                 Ver Transacción
               </button>

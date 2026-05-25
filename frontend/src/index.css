@@ -16,102 +16,102 @@
 
 @layer base {
   :root {
-    /* Core Palette */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* Core Palette - Premium Slate & Clean White surfaces */
+    --background: 240 6% 99%;
+    --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 224 71.4% 4.1%;
 
-    /* Primary - Electric Violet (Speed, Energy, Trust) */
-    --primary: 263 85% 60%;
+    /* Primary - Premium Deep Indigo-Violet (High-end Fintech) */
+    --primary: 250 84% 54%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 263 85% 70%;
+    --primary-glow: 250 84% 65%;
 
-    /* Secondary - Slate Gray (Professional, Balanced) */
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Very clean Slate Neutrals */
+    --secondary: 240 5.9% 96%;
+    --secondary-foreground: 240 5.9% 10%;
 
-    /* Muted - Subtle backgrounds */
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted - Subtle text & elements */
+    --muted: 240 5.9% 96%;
+    --muted-foreground: 240 3.8% 46%;
 
-    /* Accent - Energetic Pop */
-    --accent: 263 85% 95%;
-    --accent-foreground: 263 85% 45%;
+    /* Accent - Curated Violet Highlight */
+    --accent: 250 84% 96.5%;
+    --accent-foreground: 250 84% 44%;
 
-    /* Destructive - Error States */
-    --destructive: 0 84.2% 60.2%;
+    /* Destructive - Elegant Error Red */
+    --destructive: 0 84.2% 58%;
     --destructive-foreground: 0 0% 98%;
 
-    /* UI Elements */
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 263 85% 60%;
+    /* UI Elements - Polished borders and rings */
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 250 84% 54%;
     --radius: 0.75rem;
-    --shadow: 240 10% 3.9%;
+    --shadow: 240 10% 4%;
 
-    /* Brand Colors - Fintech Optimized */
-    --brand-electric: 263 85% 60%;      /* Main brand - Electric Violet */
-    --brand-trust: 220 85% 55%;         /* Trust Blue */
-    --brand-success: 150 65% 45%;       /* Success Green */
-    --brand-warning: 45 93% 47%;        /* Warning Amber */
-    --brand-danger: 0 72% 51%;          /* Danger Red */
+    /* Brand Colors - Fintech Standard */
+    --brand-electric: 250 84% 54%;      /* Main brand - Deep Indigo */
+    --brand-trust: 220 80% 50%;         /* Trust Royal Blue */
+    --brand-success: 160 84% 36%;       /* Success Emerald Green */
+    --brand-warning: 36 84% 48%;        /* Warning Amber/Gold */
+    --brand-danger: 0 84% 52%;          /* Danger Crimson Red */
 
     /* Payment States */
-    --payment-incoming: 150 65% 45%;    /* Money received */
+    --payment-incoming: 160 84% 36%;    /* Money received */
     --payment-outgoing: 240 60% 55%;    /* Money sent */
-    --payment-pending: 45 93% 47%;      /* Processing */
+    --payment-pending: 36 84% 48%;      /* Processing */
   }
 
   .dark {
-    /* Core Palette */
-    --background: 240 10% 3.9%;
+    /* Core Palette - Dark Mode Optimized Slate/Zinc */
+    --background: 224 71.4% 4.1%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 224 71.4% 6%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 224 71.4% 6%;
     --popover-foreground: 0 0% 98%;
 
-    /* Primary - Electric Violet (enhanced for dark mode) */
-    --primary: 263 85% 65%;
+    /* Primary - Enhanced Deep Indigo for Dark Mode */
+    --primary: 250 84% 62%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 263 85% 75%;
+    --primary-glow: 250 84% 72%;
 
     /* Secondary */
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
 
     /* Muted */
-    --muted: 240 3.7% 15.9%;
+    --muted: 240 3.7% 12%;
     --muted-foreground: 240 5% 64.9%;
 
     /* Accent */
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 250 80% 15%;
+    --accent-foreground: 250 80% 95%;
 
     /* Destructive */
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 45%;
     --destructive-foreground: 0 0% 98%;
 
     /* UI Elements */
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 263 85% 65%;
+    --ring: 250 84% 62%;
     --shadow: 0 0% 0%;
 
     /* Brand Colors - Dark Mode Adjusted */
-    --brand-electric: 263 85% 65%;
-    --brand-trust: 220 85% 60%;
-    --brand-success: 150 65% 50%;
-    --brand-warning: 45 93% 52%;
-    --brand-danger: 0 72% 56%;
+    --brand-electric: 250 84% 62%;
+    --brand-trust: 220 80% 55%;
+    --brand-success: 160 84% 42%;
+    --brand-warning: 36 84% 54%;
+    --brand-danger: 0 84% 54%;
 
     /* Payment States */
-    --payment-incoming: 150 65% 50%;
+    --payment-incoming: 160 84% 42%;
     --payment-outgoing: 240 60% 60%;
-    --payment-pending: 45 93% 52%;
+    --payment-pending: 36 84% 54%;
   }
 }
 

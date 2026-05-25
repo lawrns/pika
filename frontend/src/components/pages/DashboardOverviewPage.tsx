@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Avatar, fmtMXN } from '../pika/atoms';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Zap, Rocket, MessageSquare, Check, Coins, Clock, X, Landmark, Lock } from 'lucide-react';
+import { useAppStore } from '@/store';
 
 export default function DashboardOverviewPage() {
   const navigate = useNavigate();
+  const { user } = useAppStore();
 
   const [activeRequests, setActiveRequests] = useState<any[]>([]);
   const [paidRequests, setPaidRequests] = useState<any[]>([]);
@@ -12,20 +14,26 @@ export default function DashboardOverviewPage() {
   const [isClabeModalOpen, setIsClabeModalOpen] = useState(false);
   const [clabeInput, setClabeInput] = useState('');
   const [registeringClabe, setRegisteringClabe] = useState(false);
-  const [profileName, setProfileName] = useState('Mariana Báez');
+  const [profileName, setProfileName] = useState(user?.name || 'Mariana Báez');
   const [loading, setLoading] = useState(true);
 
   const loadDashboardData = async () => {
     try {
+      const token = localStorage.getItem('pika-auth-token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       // Fetch User profile
-      const userRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/me');
+      const userRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/me', { headers });
       if (userRes.ok) {
         const userData = await userRes.json();
-        setProfileName(userData.displayName || 'Mariana Báez');
+        setProfileName(userData.displayName || userData.fullName || userData.name || user?.name || 'Mariana Báez');
       }
 
       // Fetch Receiving Accounts to check CLABE registration
-      const accountsRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/receiving-accounts');
+      const accountsRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/receiving-accounts', { headers });
       if (accountsRes.ok) {
         const accounts = await accountsRes.json();
         const hasClabe = accounts.some((acc: any) => acc.accountType === 'clabe' || acc.accountType === 'dimo_phone');
@@ -33,7 +41,7 @@ export default function DashboardOverviewPage() {
       }
 
       // Fetch Requests
-      const reqsRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/requests');
+      const reqsRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/requests', { headers });
       if (reqsRes.ok) {
         const reqs = await reqsRes.json();
         // Filter requests
@@ -86,9 +94,17 @@ export default function DashboardOverviewPage() {
     }
     setRegisteringClabe(true);
     try {
+      const token = localStorage.getItem('pika-auth-token');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/receiving-accounts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           accountType: 'clabe',
           identifier: digitsOnly
@@ -113,7 +129,7 @@ export default function DashboardOverviewPage() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#f7f5fa] text-neutral-900 pb-24 relative">
+    <div className="w-full text-neutral-900 pb-24 relative bg-transparent">
       {/* ── HEADER ── */}
       <header className="px-6 pt-12 pb-6 flex items-center justify-between max-w-lg mx-auto w-full">
         <div className="flex items-center gap-3">
@@ -125,7 +141,7 @@ export default function DashboardOverviewPage() {
         </div>
         <button
           onClick={handleCreateRequest}
-          className="w-10 h-10 rounded-full bg-[#7B2FF2] hover:bg-[#6419D6] text-white flex items-center justify-center shadow transition-transform active:scale-95"
+          className="w-10 h-10 rounded-full bg-primary hover:bg-primary/95 text-white flex items-center justify-center shadow transition-transform active:scale-95"
           title="Nuevo cobro"
         >
           <Plus className="w-5 h-5" />
@@ -134,13 +150,13 @@ export default function DashboardOverviewPage() {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center text-center p-12">
-          <div className="w-10 h-10 border-4 border-[#7B2FF2] border-t-transparent rounded-full animate-spin mb-4" />
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-sm font-semibold text-neutral-400">Cargando tu dashboard Pika...</p>
         </div>
       ) : (
         <div className="px-6 space-y-6 max-w-lg mx-auto">
           {/* ── CALL TO ACTION HERO ── */}
-          <div className="bg-gradient-to-br from-[#6419D6] to-[#7B2FF2] text-white rounded-3xl p-6 relative overflow-hidden shadow-lg">
+          <div className="bg-gradient-to-br from-primary to-primary-glow text-white rounded-3xl p-6 relative overflow-hidden shadow-lg">
             <div className="relative z-10 flex flex-col items-start">
               <span className="text-xs font-extrabold uppercase tracking-wider text-white/80 mb-2">Pika MX</span>
               <h2 className="text-2xl font-black font-display leading-[0.95] mb-2">¿Te deben una lana?</h2>
@@ -149,9 +165,9 @@ export default function DashboardOverviewPage() {
               </p>
               <button
                 onClick={handleCreateRequest}
-                className="px-6 py-3 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full text-sm shadow-md transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-1.5"
+                className="px-6 py-3 bg-white hover:bg-white/90 text-zinc-950 font-black rounded-full text-sm shadow-md transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-1.5"
               >
-                Nuevo Pika <Zap className="w-4 h-4 fill-current shrink-0" />
+                Nuevo Pika <Zap className="w-4 h-4 fill-current text-primary shrink-0" />
               </button>
             </div>
           </div>
@@ -159,7 +175,7 @@ export default function DashboardOverviewPage() {
           {/* ── ACTIVATION CHECKLIST ── */}
           <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-sm">
             <h3 className="text-base font-extrabold text-neutral-800 mb-4 flex items-center gap-2">
-              <Rocket className="w-5 h-5 text-[#7B2FF2]" /> Tu activación
+              <Rocket className="w-5 h-5 text-primary" /> Tu activación
             </h3>
             <div className="space-y-3.5">
               {[
@@ -172,15 +188,15 @@ export default function DashboardOverviewPage() {
                   key={idx} 
                   onClick={task.onClick || undefined}
                   className={`flex items-center gap-3 text-sm font-semibold transition-all ${
-                    task.onClick ? 'cursor-pointer hover:bg-neutral-50 p-2 -m-2 rounded-xl border border-dashed border-transparent hover:border-[#7B2FF2]/20' : ''
-                  } ${task.done ? 'text-neutral-500' : 'text-[#7B2FF2]'}`}
+                    task.onClick ? 'cursor-pointer hover:bg-neutral-50 p-2 -m-2 rounded-xl border border-dashed border-transparent hover:border-primary/20' : ''
+                  } ${task.done ? 'text-neutral-500' : 'text-primary'}`}
                 >
                   <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                    task.done ? 'bg-[#DDF8E7] text-[#22A952]' : 'bg-[#EFE4FF] text-[#7B2FF2] border border-[#7B2FF2]/20'
+                    task.done ? 'bg-emerald-500/10 text-emerald-600' : 'bg-primary/10 text-primary border border-primary/20'
                   }`}>
                     {task.done ? <Check className="w-3 h-3 stroke-[3]" /> : idx + 1}
                   </span>
-                  <span className={task.done ? 'line-through opacity-60' : 'underline decoration-dotted decoration-[#7B2FF2]/40'}>
+                  <span className={task.done ? 'line-through opacity-60' : 'underline decoration-dotted decoration-primary/40'}>
                     {task.label}
                   </span>
                 </div>
@@ -201,7 +217,7 @@ export default function DashboardOverviewPage() {
                 <p className="text-xs font-semibold">No tienes cobros activos.</p>
                 <button
                   onClick={handleCreateRequest}
-                  className="mt-2 text-xs text-[#7B2FF2] font-bold underline"
+                  className="mt-2 text-xs text-primary font-bold underline"
                 >
                   Crear uno nuevo
                 </button>
@@ -220,8 +236,8 @@ export default function DashboardOverviewPage() {
                     </div>
                     <div className="text-right flex items-center gap-4">
                       <div>
-                        <span className="block text-base font-black font-display text-[#17102A]">{fmtMXN(req.amount)}</span>
-                        <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-[#FFF2BF] text-[#FF7A3D] font-bold">Pendiente</span>
+                        <span className="block text-base font-black font-display text-neutral-800">{fmtMXN(req.amount)}</span>
+                        <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-bold">Pendiente</span>
                       </div>
                       <button
                         onClick={() => handleShareWhatsApp(req)}
@@ -253,7 +269,7 @@ export default function DashboardOverviewPage() {
                 {paidRequests.map((req) => (
                   <div key={req.id} className="flex items-center justify-between py-3 px-3">
                     <div className="flex items-center gap-3">
-                      <span className="w-10 h-10 rounded-full bg-[#DDF8E7] text-[#22A952] flex items-center justify-center">
+                      <span className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
                         <Check className="w-5 h-5 stroke-[2.5]" />
                       </span>
                       <div>
@@ -261,7 +277,7 @@ export default function DashboardOverviewPage() {
                         <span className="text-[11px] text-neutral-400 font-semibold">{req.payer} • {req.date}</span>
                       </div>
                     </div>
-                    <span className="text-sm font-black font-display text-[#22A952]">{fmtMXN(req.amount)}</span>
+                    <span className="text-sm font-black font-display text-emerald-600">{fmtMXN(req.amount)}</span>
                   </div>
                 ))}
               </div>
@@ -282,7 +298,7 @@ export default function DashboardOverviewPage() {
             </button>
             
             <div className="text-center mb-6 flex flex-col items-center">
-              <Landmark className="w-10 h-10 text-[#7B2FF2] mb-2" />
+              <Landmark className="w-10 h-10 text-primary mb-2" />
               <h3 className="text-lg font-black text-neutral-800 mt-2">Registrar CLABE de Recibo</h3>
               <p className="text-xs text-neutral-400 mt-1 font-semibold">
                 Ingresa tu CLABE interbancaria de 18 dígitos para poder recibir transferencias de inmediato.
@@ -302,7 +318,7 @@ export default function DashboardOverviewPage() {
                 />
               </div>
 
-              <div className="text-[10px] text-neutral-400 font-semibold leading-relaxed p-2 bg-[#f7f5fa] rounded-xl flex items-center gap-2">
+              <div className="text-[10px] text-neutral-400 font-semibold leading-relaxed p-2 bg-muted rounded-xl flex items-center gap-2">
                 <Lock className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                 <span>Tus datos están protegidos. Pika solo orquesta las transferencias directas a tu banco.</span>
               </div>
@@ -310,11 +326,11 @@ export default function DashboardOverviewPage() {
               <button
                 onClick={handleRegisterClabe}
                 disabled={clabeInput.length !== 18 || registeringClabe}
-                className="w-full py-3.5 bg-[#FFC52E] hover:bg-[#FFD65C] disabled:bg-neutral-100 disabled:text-neutral-400 text-[#17102A] font-black rounded-full text-sm shadow transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-primary hover:bg-primary/90 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-sm shadow transition-all flex items-center justify-center gap-2"
               >
                 {registeringClabe ? 'Guardando...' : (
                   <span className="flex items-center gap-1.5 justify-center">
-                    Vincular cuenta <Zap className="w-4 h-4 fill-current shrink-0" />
+                    Vincular cuenta <Zap className="w-4 h-4 fill-current text-white shrink-0" />
                   </span>
                 )}
               </button>

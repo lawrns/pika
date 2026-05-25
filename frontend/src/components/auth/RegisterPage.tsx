@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useAppStore } from "@/store"
 import { authApi } from "@/lib/api"
-import { Eye, EyeOff, Loader2, User, KeyRound, Mail, ArrowRight } from "lucide-react"
+import { Eye, EyeOff, Loader2, User, KeyRound, Mail, ArrowRight, Zap } from "lucide-react"
 import { PikaWordmark, Confetti } from "@/components/pika/atoms"
 
 export function RegisterPage() {
@@ -36,16 +36,16 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#6419D6] via-[#7B2FF2] to-[#4F12B8] p-4 relative overflow-hidden font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-indigo-950/40 to-zinc-950 p-4 relative overflow-hidden font-sans">
       {/* Confetti backdrop layer */}
       <Confetti seed={15} density={70} />
 
       {/* Background ambient light */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-[#FFC52E]/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] rounded-full bg-[#FF3D8A]/10 blur-[130px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] rounded-full bg-indigo-500/10 blur-[130px] pointer-events-none" />
 
       {/* Main glass card */}
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-[32px] p-8 shadow-2xl relative z-10 text-white animate-fade-in">
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/20 rounded-[32px] p-8 shadow-2xl relative z-10 text-white animate-fade-in">
         <div className="flex flex-col items-center mb-6">
           <PikaWordmark height={40} color="#fff" />
           <h2 className="text-3xl font-black font-display text-center tracking-tight mt-6 mb-1 text-white">
@@ -127,15 +127,15 @@ export function RegisterPage() {
               checked={agreedToTerms}
               onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
               required
-              className="border-white/20 mt-0.5 data-[state=checked]:bg-[#FFC52E] data-[state=checked]:text-[#17102A]"
+              className="border-white/20 mt-0.5 data-[state=checked]:bg-white data-[state=checked]:text-zinc-950"
             />
             <Label htmlFor="terms" className="text-[11px] font-semibold text-white/85 leading-normal cursor-pointer select-none">
               Acepto los{" "}
-              <Link to="/terms" className="text-[#FFC52E] hover:underline font-bold">
+              <Link to="/terms" className="text-white hover:underline font-bold">
                 Términos de Servicio
               </Link>{" "}
               y la{" "}
-              <Link to="/privacy" className="text-[#FFC52E] hover:underline font-bold">
+              <Link to="/privacy" className="text-white hover:underline font-bold">
                 Política de Privacidad
               </Link>
             </Label>
@@ -152,14 +152,14 @@ export function RegisterPage() {
             <Button
               type="submit"
               disabled={isLoading || !agreedToTerms}
-              className="w-full h-12 bg-[#FFC52E] hover:bg-[#FFD65C] active:scale-[0.98] disabled:bg-white/10 disabled:text-white/40 text-[#17102A] font-black rounded-full shadow-lg hover:shadow-[#FFC52E]/10 transition-all flex items-center justify-center gap-2 text-sm"
+              className="w-full h-12 bg-white hover:bg-white/90 active:scale-[0.98] disabled:bg-white/10 disabled:text-white/40 text-zinc-950 font-black rounded-full shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin text-[#17102A]" />
+                <Loader2 className="h-4 w-4 animate-spin text-zinc-950" />
               ) : (
-                <>
-                  Crear mi cuenta ⚡
-                </>
+                <span className="flex items-center gap-1.5">
+                  Crear mi cuenta <Zap className="h-4 w-4 shrink-0 fill-current text-zinc-950" />
+                </span>
               )}
             </Button>
           </div>
@@ -168,7 +168,7 @@ export function RegisterPage() {
         <div className="mt-6 pt-5 border-t border-white/10 text-center text-xs font-semibold">
           <p className="text-white/70">
             ¿Ya tienes una cuenta?{" "}
-            <Link to="/login" className="text-[#FFC52E] hover:text-[#ffd361] font-black inline-flex items-center gap-0.5 hover:underline ml-1">
+            <Link to="/login" className="text-white hover:underline font-black inline-flex items-center gap-0.5 ml-1">
               Inicia sesión aquí <ArrowRight className="w-3 h-3" />
             </Link>
           </p>

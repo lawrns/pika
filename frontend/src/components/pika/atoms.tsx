@@ -127,7 +127,7 @@ export function Confetti({ seed = 7, density = 70 }: ConfettiProps) {
 
 // ── Avatar ───────────────────────────────────────────────
 const AVATAR_BGS = [
-  '#7A3DFF', '#FF7A3D', '#3DC8FF', '#46DC8E', '#FF3D8A', '#FFB23D',
+  '#4F46E5', '#059669', '#2563EB', '#374151', '#7C3AED', '#E11D48',
 ];
 
 interface AvatarProps {
@@ -169,7 +169,7 @@ interface HeartProps {
   color?: string;
 }
 
-export function Heart({ size = 32, color = '#FFD23F' }: HeartProps) {
+export function Heart({ size = 32, color = '#6366F1' }: HeartProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>
       <path d="M12 21s-7-4.4-9.3-9.1C1.1 8.5 3.3 5 6.6 5c2 0 3.3 1 4.4 2.4C12.1 6 13.4 5 15.4 5c3.3 0 5.5 3.5 3.9 6.9C19 16.6 12 21 12 21z" fill={color} />
