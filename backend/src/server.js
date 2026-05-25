@@ -89,8 +89,7 @@ app.get('/health', async (req, res) => {
 
     let redisStatus = 'disconnected';
     try {
-      await connectRedis();
-      redisStatus = 'connected';
+      redisStatus = await connectRedis() ? 'connected' : 'error';
     } catch (error) {
       redisStatus = 'error';
     }
