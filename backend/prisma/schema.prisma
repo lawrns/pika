@@ -20,6 +20,7 @@ model User {
   emailVerified   DateTime?
   phone           String?
   phoneVerified   Boolean   @default(false)
+  passwordHash    String?
   
   name            String
   businessName    String?

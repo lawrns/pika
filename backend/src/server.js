@@ -29,6 +29,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Coolify/Traefik terminates proxy traffic; required for accurate rate-limit IPs.
+app.set('trust proxy', 1);
+
 // Security middleware - PCI DSS compliant
 app.use(requestId);
 app.use(helmet({
