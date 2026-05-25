@@ -12,7 +12,7 @@ export default function PublicPayerPage() {
     requesterName: 'Laurence',
     requesterVerified: true,
     amount: 180,
-    concept: 'Tacos del Güero 🌮',
+    concept: 'Tacos del Güero',
     expiresAt: '2026-05-30T18:00:00.000Z'
   });
 
@@ -26,7 +26,7 @@ export default function PublicPayerPage() {
           requesterName: data.requesterName || 'Laurence',
           requesterVerified: data.requesterVerified ?? true,
           amount: (data.amountCents || 18000) / 100,
-          concept: data.concept || 'Cena Contramar 🐟',
+          concept: data.concept || 'Cena Contramar',
           expiresAt: data.expiresAt || new Date().toISOString()
         });
       } catch (err) {
@@ -36,7 +36,7 @@ export default function PublicPayerPage() {
           requesterName: 'Laurence',
           requesterVerified: true,
           amount: slug?.includes('ren') ? 2400 : (slug?.includes('tac') ? 180 : 480),
-          concept: slug?.includes('ren') ? 'Renta depa 🏢' : (slug?.includes('tac') ? 'Tacos del Güero 🌮' : 'Cena Contramar 🐟'),
+          concept: slug?.includes('ren') ? 'Renta depa' : (slug?.includes('tac') ? 'Tacos del Güero' : 'Cena Contramar'),
           expiresAt: '2026-05-30T18:00:00.000Z'
         });
       } finally {
@@ -78,60 +78,60 @@ export default function PublicPayerPage() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#f7f5fa] text-neutral-900 flex flex-col justify-between pb-12">
+    <div className="w-full min-h-screen bg-muted/40 text-foreground flex flex-col justify-between pb-12">
       {/* ── STATUS BAR & HEADER ── */}
-      <header className="px-6 pt-12 pb-4 bg-white border-b border-neutral-200 flex items-center justify-center">
-        <span className="text-sm font-extrabold text-[#17102A]">Capa de Pago Segura Pika</span>
+      <header className="px-6 pt-12 pb-4 bg-card border-b border-border flex items-center justify-center">
+        <span className="text-sm font-extrabold text-foreground">Capa de Pago Segura Pika</span>
       </header>
 
       {loading ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-          <div className="w-12 h-12 border-4 border-[#7B2FF2] border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-sm font-semibold text-neutral-400">Cargando cobro Pika...</p>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-sm font-semibold text-muted-foreground">Cargando cobro Pika...</p>
         </div>
       ) : (
         <>
           {status === 'pending' && (
             <div className="flex-1 flex flex-col justify-between px-6 pt-8 max-w-sm mx-auto w-full">
               {/* Bill Detail Card */}
-              <div className="bg-white border border-black/5 rounded-[28px] p-6 shadow-md text-center flex flex-col items-center">
+              <div className="bg-card border border-border rounded-[28px] p-6 shadow-md text-center flex flex-col items-center">
                 <Avatar name={requestInfo.requesterName} size={64} ring />
                 <div className="flex items-center gap-1.5 mt-3 justify-center">
-                  <span className="text-sm font-black text-neutral-800">{requestInfo.requesterName}</span>
+                  <span className="text-sm font-black text-foreground">{requestInfo.requesterName}</span>
                   {requestInfo.requesterVerified && (
-                    <span className="bg-[#DDF8E7] text-[#22A952] p-0.5 rounded-full flex items-center justify-center" title="Verificado">
+                    <span className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-0.5 rounded-full flex items-center justify-center border border-emerald-200/40 dark:border-emerald-500/25" title="Verificado">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </span>
                   )}
                 </div>
-                <span className="text-[10px] text-neutral-400 font-extrabold uppercase tracking-wider block mt-1">te está cobrando</span>
+                <span className="text-[10px] text-muted-foreground font-extrabold uppercase tracking-wider block mt-1">te está cobrando</span>
 
-                <div className="font-display font-black text-5xl text-[#17102A] tracking-tight my-5">
+                <div className="font-display font-black text-5xl text-foreground tracking-tight my-5">
                   {fmtMXN(requestInfo.amount)}
                 </div>
 
-                <div className="bg-[#f7f5fa] rounded-2xl py-3 px-4 w-full text-center">
-                  <span className="text-xs text-neutral-400 block font-semibold">Concepto</span>
-                  <span className="text-sm font-bold text-neutral-700">{requestInfo.concept}</span>
+                <div className="bg-muted rounded-2xl py-3 px-4 w-full text-center">
+                  <span className="text-xs text-muted-foreground block font-semibold">Concepto</span>
+                  <span className="text-sm font-bold text-foreground/90">{requestInfo.concept}</span>
                 </div>
               </div>
 
               {/* Trust Banner & CTA */}
               <div className="space-y-4">
-                <div className="p-4 bg-[#EFE4FF] rounded-2xl border border-[#6419D6]/10 flex items-start gap-3">
-                  <Lock className="w-5 h-5 text-[#6419D6] shrink-0 mt-0.5" />
-                  <div className="text-xs text-[#6419D6] leading-relaxed font-semibold">
+                <div className="p-4 bg-primary/10 rounded-2xl border border-primary/20 flex items-start gap-3">
+                  <Lock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div className="text-xs text-primary leading-relaxed font-semibold">
                     <strong>Pagas directo desde tu banco</strong>. Pika es una pasarela de orquestación y <strong>no guarda tu dinero</strong> ni requiere que instales una app.
                   </div>
                 </div>
 
                 <button
                   onClick={handlePay}
-                  className="w-full py-4 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full text-base shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-full text-base shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
-                  Pagar ahora <Zap className="w-5 h-5 fill-current shrink-0" />
+                  Pagar ahora <Zap className="w-5 h-5 fill-current shrink-0 text-primary-foreground" />
                 </button>
-                <span className="text-[10px] text-neutral-400 font-bold block text-center uppercase tracking-wider">
+                <span className="text-[10px] text-muted-foreground font-bold block text-center uppercase tracking-wider">
                   Liquidado instantáneamente por SPEI / DiMo
                 </span>
               </div>
@@ -140,9 +140,9 @@ export default function PublicPayerPage() {
 
           {status === 'paying' && (
             <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-              <div className="w-16 h-16 border-4 border-[#7B2FF2] border-t-transparent rounded-full animate-spin mb-6" />
-              <h2 className="text-xl font-black font-display text-neutral-800 mb-2">Redireccionando a tu banco...</h2>
-              <p className="text-sm text-neutral-400 max-w-xs font-semibold leading-relaxed">
+              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-6" />
+              <h2 className="text-xl font-black font-display text-foreground mb-2">Redireccionando a tu banco...</h2>
+              <p className="text-sm text-muted-foreground max-w-xs font-semibold leading-relaxed">
                 Pika está procesando una instrucción SPEI inmediata. Por favor no cierres esta ventana.
               </p>
             </div>
@@ -153,25 +153,25 @@ export default function PublicPayerPage() {
               <Confetti seed={9} density={120} />
 
               <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center">
-                <div className="w-20 h-20 bg-[#2FCB67] text-white rounded-full flex items-center justify-center shadow-lg mb-6 animate-bounce">
+                <div className="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-lg mb-6 animate-bounce">
                   <Check className="w-10 h-10 stroke-[3]" />
                 </div>
-                <h2 className="text-3xl font-black font-display text-neutral-800 mb-2">¡Pago Enviado!</h2>
-                <p className="text-sm text-neutral-400 leading-relaxed font-semibold max-w-xs">
+                <h2 className="text-3xl font-black font-display text-foreground mb-2">¡Pago Enviado!</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed font-semibold max-w-xs">
                   Tu transferencia SPEI hacia <strong>{requestInfo.requesterName}</strong> fue completada de forma inmediata.
                 </p>
                 <div className="mt-6">
-                  <span className="text-2xl font-black font-display block text-neutral-800">{fmtMXN(requestInfo.amount)}</span>
-                  <span className="text-xs text-neutral-400 font-semibold">{requestInfo.concept}</span>
+                  <span className="text-2xl font-black font-display block text-foreground">{fmtMXN(requestInfo.amount)}</span>
+                  <span className="text-xs text-muted-foreground font-semibold">{requestInfo.concept}</span>
                 </div>
               </div>
 
               <div className="relative z-10 space-y-3">
                 <button
                   onClick={handleDone}
-                  className="w-full py-4 bg-[#FFC52E] hover:bg-[#FFD65C] text-[#17102A] font-black rounded-full text-base shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-black rounded-full text-base shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 border border-border"
                 >
-                  Ver Recibo de Pago <FileText className="w-5 h-5 fill-current shrink-0" />
+                  Ver Recibo de Pago <FileText className="w-5 h-5 fill-current shrink-0 text-secondary-foreground" />
                 </button>
               </div>
             </div>

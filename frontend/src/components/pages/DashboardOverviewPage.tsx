@@ -129,53 +129,53 @@ export default function DashboardOverviewPage() {
   };
 
   return (
-    <div className="w-full text-neutral-900 pb-24 relative bg-transparent">
+    <div className="w-full text-foreground pb-24 relative bg-transparent">
       {/* ── HEADER ── */}
       <header className="px-6 pt-12 pb-6 flex items-center justify-between max-w-lg mx-auto w-full">
         <div className="flex items-center gap-3">
           <Avatar name={profileName} size={40} />
           <div>
-            <span className="text-xs text-neutral-400 block font-semibold">Hola,</span>
-            <span className="text-base font-black text-neutral-800">{profileName}</span>
+            <span className="text-xs text-muted-foreground block font-semibold">Hola,</span>
+            <span className="text-base font-bold text-foreground">{profileName}</span>
           </div>
         </div>
         <button
           onClick={handleCreateRequest}
-          className="w-10 h-10 rounded-full bg-primary hover:bg-primary/95 text-white flex items-center justify-center shadow transition-transform active:scale-95"
+          className="w-10 h-10 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center shadow transition-transform active:scale-95"
           title="Nuevo cobro"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-5 h-5 text-primary-foreground" />
         </button>
       </header>
 
       {loading ? (
         <div className="flex flex-col items-center justify-center text-center p-12">
           <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-sm font-semibold text-neutral-400">Cargando tu dashboard Pika...</p>
+          <p className="text-sm font-semibold text-muted-foreground">Cargando tu dashboard Pika...</p>
         </div>
       ) : (
         <div className="px-6 space-y-6 max-w-lg mx-auto">
           {/* ── CALL TO ACTION HERO ── */}
-          <div className="bg-gradient-to-br from-primary to-primary-glow text-white rounded-3xl p-6 relative overflow-hidden shadow-lg">
+          <div className="bg-card border border-border rounded-3xl p-6 relative overflow-hidden shadow-sm">
             <div className="relative z-10 flex flex-col items-start">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-white/80 mb-2">Pika MX</span>
-              <h2 className="text-2xl font-black font-display leading-[0.95] mb-2">¿Te deben una lana?</h2>
-              <p className="text-sm text-white/80 leading-relaxed max-w-xs mb-5">
+              <span className="text-xs font-mono uppercase tracking-wider text-primary mb-2">Pika MX</span>
+              <h2 className="text-2xl font-semibold tracking-tight text-foreground leading-[1.15] mb-2">¿Te deben una lana?</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mb-5">
                 Crea un cobro rápido y compártelo por WhatsApp. Tus amigos pagan de volada por SPEI o DiMo.
               </p>
               <button
                 onClick={handleCreateRequest}
-                className="px-6 py-3 bg-white hover:bg-white/90 text-zinc-950 font-black rounded-full text-sm shadow-md transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-full text-xs shadow transition-all active:scale-95 flex items-center gap-1.5"
               >
-                Nuevo Pika <Zap className="w-4 h-4 fill-current text-primary shrink-0" />
+                Nuevo Pika <Zap className="w-4 h-4 text-primary-foreground shrink-0" />
               </button>
             </div>
           </div>
 
           {/* ── ACTIVATION CHECKLIST ── */}
-          <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-sm">
-            <h3 className="text-base font-extrabold text-neutral-800 mb-4 flex items-center gap-2">
-              <Rocket className="w-5 h-5 text-primary" /> Tu activación
+          <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+            <h3 className="text-base font-extrabold text-foreground mb-4 flex items-center gap-2">
+              <Rocket className="w-5 h-5 text-muted-foreground" /> Tu activación
             </h3>
             <div className="space-y-3.5">
               {[
@@ -188,11 +188,11 @@ export default function DashboardOverviewPage() {
                   key={idx} 
                   onClick={task.onClick || undefined}
                   className={`flex items-center gap-3 text-sm font-semibold transition-all ${
-                    task.onClick ? 'cursor-pointer hover:bg-neutral-50 p-2 -m-2 rounded-xl border border-dashed border-transparent hover:border-primary/20' : ''
-                  } ${task.done ? 'text-neutral-500' : 'text-primary'}`}
+                    task.onClick ? 'cursor-pointer hover:bg-muted/50 p-2 -m-2 rounded-xl border border-dashed border-transparent hover:border-border/60' : ''
+                  } ${task.done ? 'text-muted-foreground' : 'text-primary hover:text-primary/95'}`}
                 >
                   <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                    task.done ? 'bg-emerald-500/10 text-emerald-600' : 'bg-primary/10 text-primary border border-primary/20'
+                    task.done ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-primary/10 text-primary border border-primary/20'
                   }`}>
                     {task.done ? <Check className="w-3 h-3 stroke-[3]" /> : idx + 1}
                   </span>
@@ -206,14 +206,14 @@ export default function DashboardOverviewPage() {
 
           {/* ── ACTIVE COBROS (PENDING REQUESTS) ── */}
           <div>
-            <h3 className="text-base font-extrabold text-neutral-800 mb-3 px-1 flex items-center justify-between">
+            <h3 className="text-base font-extrabold text-foreground mb-3 px-1 flex items-center justify-between">
               <span>Cobros activos</span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-200 text-neutral-600 font-bold">{activeRequests.length}</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-bold">{activeRequests.length}</span>
             </h3>
 
             {activeRequests.length === 0 ? (
-              <div className="bg-white border border-dashed border-neutral-300 rounded-2xl p-8 text-center text-neutral-400 flex flex-col items-center">
-                <Coins className="w-10 h-10 text-neutral-300 mb-2" />
+              <div className="bg-card border border-dashed border-border rounded-2xl p-8 text-center text-muted-foreground flex flex-col items-center">
+                <Coins className="w-10 h-10 text-muted-foreground/60 mb-2" />
                 <p className="text-xs font-semibold">No tienes cobros activos.</p>
                 <button
                   onClick={handleCreateRequest}
@@ -225,10 +225,10 @@ export default function DashboardOverviewPage() {
             ) : (
               <div className="space-y-3">
                 {activeRequests.map((req) => (
-                  <div key={req.id} className="bg-white border border-black/5 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                  <div key={req.id} className="bg-card border border-border rounded-2xl p-4 shadow-sm flex items-center justify-between">
                     <div>
-                      <h4 className="text-sm font-extrabold text-neutral-800">{req.concept}</h4>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-neutral-400 font-semibold">
+                      <h4 className="text-sm font-bold text-foreground">{req.concept}</h4>
+                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground font-semibold">
                         <span>Para: {req.requester}</span>
                         <span>•</span>
                         <span>{req.expires}</span>
@@ -236,12 +236,14 @@ export default function DashboardOverviewPage() {
                     </div>
                     <div className="text-right flex items-center gap-4">
                       <div>
-                        <span className="block text-base font-black font-display text-neutral-800">{fmtMXN(req.amount)}</span>
-                        <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-bold">Pendiente</span>
+                        <span className="block text-base font-black font-display text-foreground font-mono-number">{fmtMXN(req.amount)}</span>
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold border border-amber-200/40 dark:border-amber-500/25 text-[10px]">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> Pendiente
+                        </span>
                       </div>
                       <button
                         onClick={() => handleShareWhatsApp(req)}
-                        className="w-9 h-9 rounded-full bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] flex items-center justify-center shadow-sm"
+                        className="w-9 h-9 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-sm transition-colors"
                         title="Compartir por WhatsApp"
                       >
                         <MessageSquare className="w-4 h-4" />
@@ -255,29 +257,29 @@ export default function DashboardOverviewPage() {
 
           {/* ── PAID HISTORY ── */}
           <div>
-            <h3 className="text-base font-extrabold text-neutral-800 mb-3 px-1">
+            <h3 className="text-base font-extrabold text-foreground mb-3 px-1">
               Historial de cobros
             </h3>
 
             {paidRequests.length === 0 ? (
-              <div className="bg-white border border-black/5 rounded-3xl p-6 text-center text-neutral-400 flex flex-col items-center">
-                <Clock className="w-8 h-8 text-neutral-300 mb-2" />
+              <div className="bg-card border border-border rounded-3xl p-6 text-center text-muted-foreground flex flex-col items-center">
+                <Clock className="w-8 h-8 text-muted-foreground/60 mb-2" />
                 <p className="text-xs font-semibold">Aún no se ha completado ningún cobro.</p>
               </div>
             ) : (
-              <div className="bg-white border border-black/5 rounded-3xl p-3 shadow-sm divide-y divide-neutral-100">
+              <div className="bg-card border border-border rounded-3xl p-3 shadow-sm divide-y divide-border">
                 {paidRequests.map((req) => (
                   <div key={req.id} className="flex items-center justify-between py-3 px-3">
                     <div className="flex items-center gap-3">
-                      <span className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                      <span className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                         <Check className="w-5 h-5 stroke-[2.5]" />
                       </span>
                       <div>
-                        <h4 className="text-sm font-extrabold text-neutral-800">{req.concept}</h4>
-                        <span className="text-[11px] text-neutral-400 font-semibold">{req.payer} • {req.date}</span>
+                        <h4 className="text-sm font-bold text-foreground">{req.concept}</h4>
+                        <span className="text-[11px] text-muted-foreground font-semibold">{req.payer} • {req.date}</span>
                       </div>
                     </div>
-                    <span className="text-sm font-black font-display text-emerald-600">{fmtMXN(req.amount)}</span>
+                    <span className="text-sm font-bold font-display text-emerald-600 dark:text-emerald-400 font-mono-number">{fmtMXN(req.amount)}</span>
                   </div>
                 ))}
               </div>
@@ -288,49 +290,49 @@ export default function DashboardOverviewPage() {
 
       {/* ── CLABE REGISTRATION MODAL ── */}
       {isClabeModalOpen && (
-        <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm z-50 flex items-center justify-center px-6">
-          <div className="bg-white rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative border border-neutral-100">
+        <div className="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm z-50 flex items-center justify-center px-6">
+          <div className="bg-card rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative border border-border">
             <button
               onClick={() => setIsClabeModalOpen(false)}
-              className="absolute right-4 top-4 w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-500 flex items-center justify-center"
+              className="absolute right-4 top-4 w-8 h-8 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground flex items-center justify-center transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
             
             <div className="text-center mb-6 flex flex-col items-center">
               <Landmark className="w-10 h-10 text-primary mb-2" />
-              <h3 className="text-lg font-black text-neutral-800 mt-2">Registrar CLABE de Recibo</h3>
-              <p className="text-xs text-neutral-400 mt-1 font-semibold">
+              <h3 className="text-lg font-black text-foreground mt-2">Registrar CLABE de Recibo</h3>
+              <p className="text-xs text-muted-foreground mt-1 font-semibold">
                 Ingresa tu CLABE interbancaria de 18 dígitos para poder recibir transferencias de inmediato.
               </p>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4">
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">CLABE Interbancaria (18 dígitos)</label>
+              <div className="bg-muted/30 border border-border rounded-2xl p-4">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-1">CLABE Interbancaria (18 dígitos)</label>
                 <input
                   type="text"
                   maxLength={18}
                   placeholder="000000000000000000"
                   value={clabeInput}
                   onChange={e => setClabeInput(e.target.value.replace(/\D/g, ''))}
-                  className="w-full text-base font-mono font-bold tracking-widest outline-none border-none bg-transparent"
+                  className="w-full text-base font-mono font-bold tracking-widest outline-none border-none bg-transparent text-foreground"
                 />
               </div>
 
-              <div className="text-[10px] text-neutral-400 font-semibold leading-relaxed p-2 bg-muted rounded-xl flex items-center gap-2">
-                <Lock className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+              <div className="text-[10px] text-muted-foreground font-semibold leading-relaxed p-3 bg-muted/50 rounded-xl flex items-center gap-2 border border-border/40">
+                <Lock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 <span>Tus datos están protegidos. Pika solo orquesta las transferencias directas a tu banco.</span>
               </div>
 
               <button
                 onClick={handleRegisterClabe}
                 disabled={clabeInput.length !== 18 || registeringClabe}
-                className="w-full py-3.5 bg-primary hover:bg-primary/90 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-sm shadow transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground text-primary-foreground font-black rounded-full text-sm shadow transition-all flex items-center justify-center gap-2"
               >
                 {registeringClabe ? 'Guardando...' : (
                   <span className="flex items-center gap-1.5 justify-center">
-                    Vincular cuenta <Zap className="w-4 h-4 fill-current text-white shrink-0" />
+                    Vincular cuenta <Zap className="w-4 h-4 text-primary-foreground shrink-0" />
                   </span>
                 )}
               </button>
