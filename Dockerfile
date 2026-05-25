@@ -1,6 +1,9 @@
 # PIKA - Production Dockerfile
 FROM node:20-slim AS base
 
+# Install system deps
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
