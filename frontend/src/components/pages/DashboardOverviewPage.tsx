@@ -78,7 +78,7 @@ export default function DashboardOverviewPage() {
   }, []);
 
   const handleCreateRequest = () => {
-    navigate('/app/requests/new');
+    navigate('/dashboard/requests/new');
   };
 
   const handleShareWhatsApp = (req: any) => {

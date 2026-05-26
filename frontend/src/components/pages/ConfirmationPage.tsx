@@ -86,7 +86,7 @@ export default function ConfirmationPage() {
           </div>
 
           <button
-            onClick={() => navigate('/app')}
+            onClick={() => navigate('/dashboard')}
             className="w-full py-4 bg-background border border-border hover:bg-muted text-foreground font-bold rounded-full text-sm shadow transition-all active:scale-95"
           >
             Volver a la App

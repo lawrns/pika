@@ -74,7 +74,9 @@ export default function PublicPayerPage() {
   };
 
   const handleReceipt = () => {
-    if (paymentIntent?.paymentId) navigate(`/paid/${paymentIntent.paymentId}`);
+    if (paymentIntent?.paymentId && requestInfo) {
+      navigate(`/paid/${paymentIntent.paymentId}?amount=${requestInfo.amount}&concept=${encodeURIComponent(requestInfo.concept)}&name=${encodeURIComponent(requestInfo.requesterName)}`);
+    }
   };
 
   return (

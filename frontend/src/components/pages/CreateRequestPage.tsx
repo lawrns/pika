@@ -91,9 +91,9 @@ export default function CreateRequestPage() {
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'del'];
 
   return (
-    <div className="w-full min-h-screen text-neutral-900 flex flex-col justify-between pb-12 bg-transparent">
+    <div className="w-full min-h-screen text-[#17102A] flex flex-col justify-between pb-12 bg-[#f7f5fa]">
       <header className="px-6 pt-12 pb-4 flex items-center justify-between border-b border-neutral-200 bg-white">
-        <button onClick={() => step === 'share' ? setStep('create') : navigate('/app')} className="w-10 h-10 rounded-full border border-neutral-200 bg-neutral-50 flex items-center justify-center text-sm font-bold text-neutral-600">
+        <button onClick={() => step === 'share' ? setStep('create') : navigate('/dashboard')} className="w-10 h-10 rounded-full border border-neutral-200 bg-neutral-50 flex items-center justify-center text-sm font-bold text-neutral-600">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <span className="text-sm font-extrabold text-neutral-800">{step === 'create' ? 'Crear cobro Pika MX' : 'Cobro creado'}</span>
@@ -144,7 +144,7 @@ export default function CreateRequestPage() {
           <div className="space-y-3 w-full">
             <button onClick={handleWhatsAppShare} className="w-full py-3.5 bg-[#25D366] hover:bg-[#20ba56] text-white font-bold rounded-full text-sm shadow flex items-center justify-center gap-2 transform active:scale-95 transition-all"><MessageCircle className="w-4 h-4 fill-current shrink-0" /> Compartir por WhatsApp</button>
             <button onClick={handleCopyLink} className="w-full py-3.5 bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-700 font-bold rounded-full text-sm shadow flex items-center justify-center gap-2 transform active:scale-95 transition-all"><Link className="w-4 h-4 text-neutral-500 shrink-0" /> Copiar enlace de cobro</button>
-            <button onClick={() => navigate('/app')} className="w-full py-3.5 bg-transparent hover:bg-neutral-100 text-neutral-400 font-bold rounded-full text-sm transition-all">Volver al inicio</button>
+            <button onClick={() => navigate('/dashboard')} className="w-full py-3.5 bg-transparent hover:bg-neutral-200/50 text-neutral-400 hover:text-[#17102A] font-bold rounded-full text-sm transition-all">Volver al inicio</button>
           </div>
         </div>
       )}

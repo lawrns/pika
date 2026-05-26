@@ -16,6 +16,9 @@ const SettingsPage = lazy(() => import('@/components/pages/SettingsPage').then(m
 const PublicPayPage = lazy(() => import('@/components/pages/PublicPayPage').then(m => ({ default: m.default })))
 const PublicPayerPage = lazy(() => import('@/components/pages/PublicPayerPage').then(m => ({ default: m.default })))
 const LandingPage = lazy(() => import('@/components/pages/LandingPage').then(m => ({ default: m.default })))
+const CreateRequestPage = lazy(() => import('@/components/pages/CreateRequestPage').then(m => ({ default: m.default })))
+const ConfirmationPage = lazy(() => import('@/components/pages/ConfirmationPage').then(m => ({ default: m.default })))
+const HelpPage = lazy(() => import('@/components/pages/HelpPage').then(m => ({ default: m.default })))
 
 function PageSkeleton() {
   return (
@@ -48,19 +51,28 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/pay/:referenceCode" element={<PublicPayPage />} />
         <Route path="/p/:slug" element={<PublicPayerPage />} />
+        <Route path="/paid/:paymentId" element={<ConfirmationPage />} />
         <Route path="/dashboard/*" element={
           <ProtectedRoute>
-            <DashboardLayout>
-              <Routes>
-                <Route index element={<DashboardOverviewPage />} />
-                <Route path="wallet" element={<WalletPage />} />
-                <Route path="transactions" element={<TransactionsPage />} />
-                <Route path="send" element={<SendPage />} />
-                <Route path="qr" element={<QRPage />} />
-                <Route path="contacts" element={<ContactsPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-              </Routes>
-            </DashboardLayout>
+            <Routes>
+              {/* Nested layout dashboard pages */}
+              <Route path="*" element={
+                <DashboardLayout>
+                  <Routes>
+                    <Route index element={<DashboardOverviewPage />} />
+                    <Route path="wallet" element={<WalletPage />} />
+                    <Route path="transactions" element={<TransactionsPage />} />
+                    <Route path="send" element={<SendPage />} />
+                    <Route path="qr" element={<QRPage />} />
+                    <Route path="contacts" element={<ContactsPage />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                    <Route path="help" element={<HelpPage />} />
+                  </Routes>
+                </DashboardLayout>
+              } />
+              {/* Standalone wizard pages */}
+              <Route path="requests/new" element={<CreateRequestPage />} />
+            </Routes>
           </ProtectedRoute>
         } />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
