@@ -2,6 +2,14 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 import redisClient from '../config/redis.js';
 
+// In production JWT_SECRET is required (see config/env.js assertEnvironment). For
+// local/dev runs without secrets configured we fall back to a fixed dev key so the
+// auth flow works end to end; this fallback is never reached in production.
+const DEV_JWT_SECRET = 'pika-dev-insecure-secret-do-not-use-in-production';
+function jwtSecret() {
+  return process.env.JWT_SECRET || DEV_JWT_SECRET;
+}
+
 export async function authenticateToken(req, res, next) {
   try {
     const authHeader = req.headers['authorization'];
@@ -17,7 +25,7 @@ export async function authenticateToken(req, res, next) {
       return res.status(401).json({ error: 'Token has been revoked' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, jwtSecret());
     const user = await User.findById(decoded.userId);
 
     if (!user) {
@@ -48,7 +56,7 @@ export async function generateToken(user) {
     email: user.email
   };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+  const token = jwt.sign(payload, jwtSecret(), {
     expiresIn: '7d'
   });
 

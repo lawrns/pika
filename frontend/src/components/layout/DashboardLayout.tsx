@@ -6,9 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 import {
-  Wallet,
-  History,
-  Send,
+  Coins,
   QrCode,
   LayoutDashboard,
   Settings,
@@ -26,17 +24,15 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const sidebarNavItems = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Wallet", href: "/dashboard/wallet", icon: Wallet },
-  { title: "Transactions", href: "/dashboard/transactions", icon: History },
-  { title: "Send Money", href: "/dashboard/send", icon: Send },
-  { title: "QR Code", href: "/dashboard/qr", icon: QrCode },
-  { title: "Contacts", href: "/dashboard/contacts", icon: Users },
+  { title: "Inicio", href: "/dashboard", icon: LayoutDashboard },
+  { title: "Cobros", href: "/dashboard/cobros", icon: Coins },
+  { title: "QR de cobro", href: "/dashboard/qr", icon: QrCode },
+  { title: "Contactos", href: "/dashboard/contacts", icon: Users },
 ]
 
 const sidebarSecondaryItems = [
-  { title: "Settings", href: "/dashboard/settings", icon: Settings },
-  { title: "Help", href: "/dashboard/help", icon: HelpCircle },
+  { title: "Ajustes", href: "/dashboard/settings", icon: Settings },
+  { title: "Ayuda", href: "/dashboard/help", icon: HelpCircle },
 ]
 
 export function Sidebar({ className, isCollapsed }: SidebarProps) {
@@ -171,13 +167,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const getPageTitle = () => {
     const path = location.pathname
-    if (path === '/dashboard') return 'Dashboard'
-    if (path === '/dashboard/wallet') return 'Wallet'
-    if (path === '/dashboard/transactions') return 'Transactions'
-    if (path === '/dashboard/send') return 'Send Money'
-    if (path === '/dashboard/qr') return 'QR Payments'
-    if (path === '/dashboard/contacts') return 'Contacts'
-    if (path === '/dashboard/settings') return 'Settings'
+    if (path === '/dashboard') return 'Inicio'
+    if (path === '/dashboard/cobros') return 'Cobros'
+    if (path === '/dashboard/qr') return 'QR de cobro'
+    if (path === '/dashboard/contacts') return 'Contactos'
+    if (path === '/dashboard/settings') return 'Ajustes'
+    if (path === '/dashboard/help') return 'Ayuda'
     return 'Pika'
   }
   const isDashboardHome = location.pathname === '/dashboard' || location.pathname === '/dashboard/';

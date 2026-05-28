@@ -16,27 +16,28 @@ function normalize(row) {
   };
 }
 
+// Pika is orchestration-only at launch: it never holds customer balances and is
+// not a wallet (see docs/specs section 2 & 20). These helpers exist only so the
+// auth flow has a stable shape to return; they intentionally hold no stored value.
+function syntheticWallet(userId, currency = 'MXN') {
+  return {
+    id: `wallet_${userId}`,
+    user_id: userId,
+    balance: 0,
+    currency,
+    is_active: true,
+    daily_limit: null,
+    monthly_limit: null
+  };
+}
+
 export class Wallet {
   static async create(userId, options = {}) {
-    const { currency = 'MXN', dailyLimit = null, monthlyLimit = null } = options;
-    return withTransaction(async (client) => {
-      const existing = await client.query('SELECT id FROM wallets WHERE "userId" = $1 FOR UPDATE', [userId]);
-      if (existing.rows.length > 0) return normalize(existing.rows[0]);
-      const result = await client.query(
-        `INSERT INTO wallets (id, "userId", balance, currency, "dailyLimit", "monthlyLimit", "createdAt", "updatedAt")
-         VALUES ($1, $2, 0, $3, $4, $5, NOW(), NOW())
-         RETURNING *`,
-        [uuidv4(), userId, currency, dailyLimit, monthlyLimit]
-      );
-      return normalize(result.rows[0]);
-    });
+    return syntheticWallet(userId, options.currency || 'MXN');
   }
 
-  static async findByUserId(userId, options = {}) {
-    const { forUpdate = false, client } = options;
-    const queryClient = client || pool;
-    const result = await queryClient.query(`SELECT * FROM wallets WHERE "userId" = $1${forUpdate ? ' FOR UPDATE' : ''}`, [userId]);
-    return normalize(result.rows[0]);
+  static async findByUserId(userId) {
+    return syntheticWallet(userId);
   }
 
   static async findById(walletId, options = {}) {

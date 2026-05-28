@@ -10,7 +10,14 @@ try {
   redisClient = createClient({
     url: process.env.REDIS_URL || 'redis://localhost:6379',
     socket: {
-      reconnectStrategy: (retries) => Math.min(retries * 50, 500),
+      // Fail fast on a missing Redis so server startup and /health never hang.
+      connectTimeout: 2000,
+      reconnectStrategy: (retries) => {
+        // Give up after a few attempts: returning false stops reconnection and
+        // makes the pending connect() promise reject so we fall back gracefully.
+        if (retries > 5) return false;
+        return Math.min(retries * 50, 500);
+      },
     },
   });
 

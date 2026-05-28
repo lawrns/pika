@@ -3,6 +3,7 @@ import { Avatar, fmtMXN } from '../pika/atoms';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Zap, Rocket, MessageSquare, Check, Coins, Clock, X, Landmark, Lock } from 'lucide-react';
 import { useAppStore } from '@/store';
+import { profileApi, receivingAccountsApi, requestsApi } from '@/lib/api';
 
 export default function DashboardOverviewPage() {
   const navigate = useNavigate();
@@ -14,56 +15,43 @@ export default function DashboardOverviewPage() {
   const [isClabeModalOpen, setIsClabeModalOpen] = useState(false);
   const [clabeInput, setClabeInput] = useState('');
   const [registeringClabe, setRegisteringClabe] = useState(false);
-  const [profileName, setProfileName] = useState(user?.name || 'Mariana Báez');
+  const [profileName, setProfileName] = useState(user?.name || 'Pika MX');
   const [loading, setLoading] = useState(true);
 
   const loadDashboardData = async () => {
     try {
-      const token = localStorage.getItem('pika-auth-token');
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+      const displayName = user?.name || 'Pika MX';
+
+      const profileRes = await profileApi.get();
+      const resolvedName = profileRes.data?.name || displayName;
+      setProfileName(resolvedName);
+
+      const accountsRes = await receivingAccountsApi.list();
+      if (accountsRes.data) {
+        setClabeRegistered(accountsRes.data.some((acc) => acc.accountType === 'clabe' || acc.accountType === 'dimo_phone'));
       }
 
-      // Fetch User profile
-      const userRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/me', { headers });
-      if (userRes.ok) {
-        const userData = await userRes.json();
-        setProfileName(userData.displayName || userData.fullName || userData.name || user?.name || 'Mariana Báez');
-      }
+      const reqsRes = await requestsApi.list();
+      if (reqsRes.data) {
+        const pending = reqsRes.data.filter((r) => r.status === 'pending');
+        const paid = reqsRes.data.filter((r) => r.status === 'paid');
 
-      // Fetch Receiving Accounts to check CLABE registration
-      const accountsRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/receiving-accounts', { headers });
-      if (accountsRes.ok) {
-        const accounts = await accountsRes.json();
-        const hasClabe = accounts.some((acc: any) => acc.accountType === 'clabe' || acc.accountType === 'dimo_phone');
-        setClabeRegistered(hasClabe);
-      }
-
-      // Fetch Requests
-      const reqsRes = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/requests', { headers });
-      if (reqsRes.ok) {
-        const reqs = await reqsRes.json();
-        // Filter requests
-        const pending = reqs.filter((r: any) => r.status === 'pending');
-        const paid = reqs.filter((r: any) => r.status === 'paid');
-        
-        setActiveRequests(pending.map((r: any) => ({
+        setActiveRequests(pending.map((r) => ({
           id: r.requestId,
           concept: r.concept,
-          amount: r.amountCents / 100,
-          requester: 'Mariana Báez',
+          amount: r.amount,
+          requester: resolvedName,
           expires: 'En 7 días',
           code: r.publicSlug
         })));
 
-        setPaidRequests(paid.map((r: any) => ({
+        setPaidRequests(paid.map((r) => ({
           id: r.requestId,
           concept: r.concept,
-          amount: r.amountCents / 100,
+          amount: r.amount,
           payer: 'Payer verificado',
           date: new Date(r.updatedAt || r.createdAt).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }),
-          receipt: r.qrAssetId
+          receipt: r.requestId
         })));
       }
     } catch (err) {
@@ -94,31 +82,15 @@ export default function DashboardOverviewPage() {
     }
     setRegisteringClabe(true);
     try {
-      const token = localStorage.getItem('pika-auth-token');
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json'
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const response = await fetch('https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1/receiving-accounts', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          accountType: 'clabe',
-          identifier: digitsOnly
-        })
-      });
-      if (response.ok) {
+      const result = await receivingAccountsApi.create('clabe', digitsOnly);
+      if (result.data) {
         setClabeRegistered(true);
         setIsClabeModalOpen(false);
         setClabeInput('');
         alert('¡CLABE vinculada con éxito para tus cobros Pika!');
         loadDashboardData();
       } else {
-        const errorData = await response.json();
-        alert('Hubo un error al registrar la CLABE: ' + (errorData.error || 'Intenta de nuevo'));
+        alert('Hubo un error al registrar la CLABE: ' + (result.error || 'Intenta de nuevo'));
       }
     } catch (err) {
       console.error(err);

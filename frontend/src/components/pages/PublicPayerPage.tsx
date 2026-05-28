@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Avatar, fmtMXN } from '../pika/atoms';
 import { Check, Lock, Zap, FileText, AlertCircle, QrCode } from 'lucide-react';
-
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1').replace(/\/$/, '');
+import { API_BASE_URL } from '@/lib/api';
 
 type RequestInfo = {
   requesterName: string;

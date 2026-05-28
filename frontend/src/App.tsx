@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { useAppStore } from '@/store'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -7,13 +7,10 @@ import { LoginPage } from '@/components/auth/LoginPage'
 import { RegisterPage } from '@/components/auth/RegisterPage'
 
 const DashboardOverviewPage = lazy(() => import('@/components/pages/DashboardOverviewPage').then(m => ({ default: m.default })))
-const WalletPage = lazy(() => import('@/components/pages/WalletPage').then(m => ({ default: m.default })))
-const TransactionsPage = lazy(() => import('@/components/pages/TransactionsPage').then(m => ({ default: m.default })))
-const SendPage = lazy(() => import('@/components/pages/SendPage').then(m => ({ default: m.default })))
+const CobrosPage = lazy(() => import('@/components/pages/CobrosPage').then(m => ({ default: m.default })))
 const QRPage = lazy(() => import('@/components/pages/QRPage').then(m => ({ default: m.default })))
 const ContactsPage = lazy(() => import('@/components/pages/ContactsPage').then(m => ({ default: m.default })))
 const SettingsPage = lazy(() => import('@/components/pages/SettingsPage').then(m => ({ default: m.default })))
-const PublicPayPage = lazy(() => import('@/components/pages/PublicPayPage').then(m => ({ default: m.default })))
 const PublicPayerPage = lazy(() => import('@/components/pages/PublicPayerPage').then(m => ({ default: m.default })))
 const LandingPage = lazy(() => import('@/components/pages/LandingPage').then(m => ({ default: m.default })))
 const CreateRequestPage = lazy(() => import('@/components/pages/CreateRequestPage').then(m => ({ default: m.default })))
@@ -42,6 +39,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+// Legacy /pay/:slug links now resolve to the spec public payer page at /p/:slug.
+function LegacyPayRedirect() {
+  const { slug } = useParams()
+  return <Navigate to={`/p/${slug}`} replace />
+}
+
 export default function App() {
   return (
     <Suspense fallback={<PageSkeleton />}>
@@ -49,7 +52,7 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/pay/:referenceCode" element={<PublicPayPage />} />
+        <Route path="/pay/:slug" element={<LegacyPayRedirect />} />
         <Route path="/p/:slug" element={<PublicPayerPage />} />
         <Route path="/paid/:paymentId" element={<ConfirmationPage />} />
         <Route path="/dashboard/*" element={
@@ -60,13 +63,12 @@ export default function App() {
                 <DashboardLayout>
                   <Routes>
                     <Route index element={<DashboardOverviewPage />} />
-                    <Route path="wallet" element={<WalletPage />} />
-                    <Route path="transactions" element={<TransactionsPage />} />
-                    <Route path="send" element={<SendPage />} />
+                    <Route path="cobros" element={<CobrosPage />} />
                     <Route path="qr" element={<QRPage />} />
                     <Route path="contacts" element={<ContactsPage />} />
                     <Route path="settings" element={<SettingsPage />} />
                     <Route path="help" element={<HelpPage />} />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   </Routes>
                 </DashboardLayout>
               } />

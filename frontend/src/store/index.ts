@@ -21,6 +21,7 @@ interface AppStore {
   addTransaction: (transaction: Transaction) => void
   updateTransaction: (id: string, updates: Partial<Transaction>) => void
   deleteTransaction: (id: string) => void
+  setContacts: (contacts: Contact[]) => void
   addContact: (contact: Contact) => void
   updateContact: (id: string, updates: Partial<Contact>) => void
   removeContact: (id: string) => void
@@ -57,6 +58,7 @@ export const useAppStore = create<AppStore>()(
       addTransaction: (transaction) => set((state) => ({ transactions: [transaction, ...state.transactions] })),
       updateTransaction: (id, updates) => set((state) => ({ transactions: state.transactions.map(t => t.id === id ? { ...t, ...updates } : t) })),
       deleteTransaction: (id) => set((state) => ({ transactions: state.transactions.filter(t => t.id !== id) })),
+      setContacts: (contacts) => set({ contacts }),
       addContact: (contact) => set((state) => ({ contacts: [...state.contacts, contact] })),
       updateContact: (id, updates) => set((state) => ({ contacts: state.contacts.map(c => c.id === id ? { ...c, ...updates } : c) })),
       removeContact: (id) => set((state) => ({ contacts: state.contacts.filter(c => c.id !== id) })),

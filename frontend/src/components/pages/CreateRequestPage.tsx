@@ -3,8 +3,7 @@ import { fmtMXN } from '../pika/atoms';
 import { useNavigate } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { ArrowLeft, Zap, MessageCircle, Link, AlertCircle } from 'lucide-react';
-
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1').replace(/\/$/, '');
+import { API_BASE_URL } from '@/lib/api';
 
 export default function CreateRequestPage() {
   const navigate = useNavigate();
