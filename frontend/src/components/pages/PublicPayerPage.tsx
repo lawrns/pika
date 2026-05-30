@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Avatar, fmtMXN } from '../pika/atoms';
 import { Check, Lock, Zap, FileText, AlertCircle, QrCode } from 'lucide-react';
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, publicApi } from '@/lib/api';
+import { LoadingState } from '@/components/ui/loading-state';
 
 type RequestInfo = {
   requesterName: string;
@@ -86,8 +87,7 @@ export default function PublicPayerPage() {
 
       {loading ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-sm font-semibold text-muted-foreground">Cargando cobro Pika...</p>
+          <LoadingState message="Cargando cobro Pika..." />
         </div>
       ) : status === 'error' || !requestInfo ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-6 max-w-sm mx-auto">

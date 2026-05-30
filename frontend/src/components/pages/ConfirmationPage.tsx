@@ -3,6 +3,7 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { PikaWordmark, fmtMXN } from '../pika/atoms';
 import { Check, Zap, Clock, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 import { publicApi } from '@/lib/api';
+import { LoadingState } from '@/components/ui/loading-state';
 
 type Receipt = {
   paymentId: string;
@@ -85,8 +86,7 @@ export default function ConfirmationPage() {
       <div className="flex-1 flex flex-col justify-between px-6 pt-8 max-w-sm mx-auto w-full">
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center py-16">
-            <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
-            <p className="text-sm font-semibold text-muted-foreground">Consultando el estado de tu pago...</p>
+            <LoadingState message="Consultando el estado de tu pago..." />
           </div>
         ) : error && !receipt ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center py-16">
@@ -169,6 +169,7 @@ export default function ConfirmationPage() {
                 onClick={() => fetchReceipt(true)}
                 disabled={refreshing}
                 className="w-full mt-5 py-3 bg-muted hover:bg-muted/70 text-foreground font-bold rounded-full text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                aria-label="Actualizar estado del pago"
               >
                 {refreshing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
                 Actualizar estado

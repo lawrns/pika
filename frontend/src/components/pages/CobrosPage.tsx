@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { fmtMXN } from '../pika/atoms';
 import { requestsApi, type PaymentRequest } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
-import { Plus, MessageSquare, Link as LinkIcon, Loader2, Coins, Check, Bell } from 'lucide-react';
+import { Plus, MessageSquare, Link as LinkIcon, Coins, Check, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LoadingState } from '@/components/ui/loading-state';
+import { EmptyState } from '@/components/ui/empty-state';
 
 type Filter = 'all' | 'pending' | 'paid';
 
@@ -113,10 +115,7 @@ export default function CobrosPage() {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center text-center p-12">
-          <Loader2 className="w-8 h-8 text-primary animate-spin mb-3" />
-          <p className="text-sm font-semibold text-neutral-400">Cargando tus cobros...</p>
-        </div>
+        <LoadingState message="Cargando tus cobros..." />
       ) : visible.length === 0 ? (
         <div className="bg-white border border-dashed border-black/10 rounded-[32px] p-12 text-center flex flex-col items-center">
           <Coins className="w-12 h-12 text-primary/25 mb-3" />
@@ -160,14 +159,14 @@ export default function CobrosPage() {
               <div className="flex items-center gap-3 shrink-0">
                 <span className="text-base font-black font-display text-neutral-800">{fmtMXN(req.amount)}</span>
                 {req.status === 'pending' && (
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => handleShare(req)} title="Compartir por WhatsApp" className="w-9 h-9 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 flex items-center justify-center transition-colors">
+                  <div className="flex items-center gap-1 flex-wrap">
+                    <button onClick={() => handleShare(req)} aria-label="Compartir por WhatsApp" className="w-9 h-9 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 flex items-center justify-center transition-colors">
                       <MessageSquare className="w-4 h-4" />
                     </button>
-                    <button onClick={() => handleCopy(req)} title="Copiar enlace" className="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 flex items-center justify-center transition-colors">
+                    <button onClick={() => handleCopy(req)} aria-label="Copiar enlace" className="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 flex items-center justify-center transition-colors">
                       <LinkIcon className="w-4 h-4" />
                     </button>
-                    <button onClick={() => handleRemind(req)} title="Enviar recordatorio" className="w-9 h-9 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 flex items-center justify-center transition-colors">
+                    <button onClick={() => handleRemind(req)} aria-label="Enviar recordatorio" className="w-9 h-9 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 flex items-center justify-center transition-colors">
                       <Bell className="w-4 h-4" />
                     </button>
                   </div>

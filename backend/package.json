@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
-    "supertest": "^6.3.4"
+    "supertest": "^6.3.4",
+    "vitest": "^4.1.7"
   }
 }

@@ -4,9 +4,18 @@ import { useAppStore } from '@/store';
 import type { Contact } from '@/store/types';
 import { useToast } from '@/components/ui/use-toast';
 import { contactsApi } from '@/lib/api';
+import { LoadingState } from '@/components/ui/loading-state';
+import { EmptyState } from '@/components/ui/empty-state';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   Search, UserPlus, Mail, Phone,
-  Loader2, X, Users, User, Coins
+  Loader2, Users, User, Coins
 } from 'lucide-react';
 
 export default function ContactsPage() {
@@ -86,7 +95,7 @@ export default function ContactsPage() {
       <button
         onClick={() => navigate('/dashboard/requests/new')}
         className="shrink-0 px-3.5 py-2 rounded-full bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95"
-        title="Crear un cobro"
+        aria-label={`Crear cobro para ${contact.name}`}
       >
         <Coins className="h-3.5 w-3.5" />
         Cobrar
@@ -127,10 +136,7 @@ export default function ContactsPage() {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center text-center p-12">
-          <Loader2 className="w-8 h-8 text-primary animate-spin mb-3" />
-          <p className="text-sm font-semibold text-neutral-400">Cargando tu directorio...</p>
-        </div>
+        <LoadingState message="Cargando tu directorio..." />
       ) : contacts.length === 0 ? (
         <div className="bg-white border border-black/5 rounded-[32px] p-12 text-center flex flex-col items-center max-w-md mx-auto">
           <Users className="w-12 h-12 text-primary/25 mb-3" />
@@ -163,72 +169,64 @@ export default function ContactsPage() {
         </div>
       )}
 
-      {/* ── ADD NEW MODAL ── */}
-      {isAddOpen && (
-        <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm z-50 flex items-center justify-center px-6">
-          <div className="bg-white rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative border border-neutral-100">
-            <button
-              onClick={() => setIsAddOpen(false)}
-              className="absolute right-4 top-4 w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-500 flex items-center justify-center"
-            >
-              <X className="w-4 h-4" />
-            </button>
-            <div className="text-center mb-6 flex flex-col items-center">
-              <User className="h-10 w-10 text-primary mb-2" />
-              <h3 className="text-lg font-black text-neutral-800 mt-2">Nuevo Contacto</h3>
-              <p className="text-xs text-neutral-400 mt-1 font-semibold">
-                Completa los datos para vincular el contacto en Pika.
-              </p>
+      {/* ── ADD CONTACT DIALOG ── */}
+      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+        <DialogContent className="rounded-[32px] max-w-sm p-6">
+          <DialogHeader className="text-center flex flex-col items-center space-y-2">
+            <User className="h-10 w-10 text-primary mb-1" />
+            <DialogTitle className="text-lg font-black text-neutral-800">Nuevo Contacto</DialogTitle>
+            <DialogDescription className="text-xs text-neutral-400 font-semibold">
+              Completa los datos para vincular el contacto en Pika.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2 text-xs font-semibold text-neutral-700 mt-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Nombre Completo *</label>
+              <input
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="ej. Carlos Reyes"
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-full outline-none"
+              />
             </div>
-            <div className="space-y-4 py-2 text-xs font-semibold text-neutral-700">
-              <div className="space-y-1">
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Nombre Completo *</label>
-                <input
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="ej. Carlos Reyes"
-                  className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-full outline-none"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Número de Celular</label>
-                <input
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="ej. +52 55 1234 5678"
-                  className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-full outline-none font-mono"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Correo Electrónico</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="ej. carlos@ejemplo.com"
-                  className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-full outline-none"
-                />
-              </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Número de Celular</label>
+              <input
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="ej. +52 55 1234 5678"
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-full outline-none font-mono"
+              />
             </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setIsAddOpen(false)}
-                className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 font-bold rounded-full text-xs transition-all"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={!formData.name || isLoading}
-                className="flex-1 py-3 bg-primary hover:bg-primary/90 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
-              >
-                {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                Guardar contacto
-              </button>
+            <div className="space-y-1">
+              <label className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block mb-1">Correo Electrónico</label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="ej. carlos@ejemplo.com"
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-full outline-none"
+              />
             </div>
           </div>
-        </div>
-      )}
+          <div className="flex gap-3 mt-6">
+            <button
+              onClick={() => setIsAddOpen(false)}
+              className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 font-bold rounded-full text-xs transition-all"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={!formData.name || isLoading}
+              className="flex-1 py-3 bg-primary hover:bg-primary/90 disabled:bg-neutral-100 disabled:text-neutral-400 text-white font-black rounded-full text-xs shadow transition-all flex items-center justify-center gap-1.5"
+            >
+              {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              Guardar contacto
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

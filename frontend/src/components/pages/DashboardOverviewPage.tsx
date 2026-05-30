@@ -1,9 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Avatar, fmtMXN } from '../pika/atoms';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Zap, Rocket, MessageSquare, Check, Coins, Clock, X, Landmark, Lock } from 'lucide-react';
+import { Plus, Zap, Rocket, MessageSquare, Check, Coins, Clock, Landmark, Lock } from 'lucide-react';
 import { useAppStore } from '@/store';
 import { profileApi, receivingAccountsApi, requestsApi } from '@/lib/api';
+import { LoadingState } from '@/components/ui/loading-state';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 export default function DashboardOverviewPage() {
   const navigate = useNavigate();
@@ -114,17 +122,14 @@ export default function DashboardOverviewPage() {
         <button
           onClick={handleCreateRequest}
           className="w-10 h-10 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center shadow transition-transform active:scale-95"
-          title="Nuevo cobro"
+          aria-label="Nuevo cobro"
         >
           <Plus className="w-5 h-5 text-primary-foreground" />
         </button>
       </header>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center text-center p-12">
-          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-sm font-semibold text-muted-foreground">Cargando tu dashboard Pika...</p>
-        </div>
+        <LoadingState message="Cargando tu dashboard Pika..." />
       ) : (
         <div className="px-6 space-y-6 max-w-lg mx-auto">
           {/* ── CALL TO ACTION HERO ── */}
@@ -238,7 +243,7 @@ export default function DashboardOverviewPage() {
                       <button
                         onClick={() => handleShareWhatsApp(req)}
                         className="w-9 h-9 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 flex items-center justify-center shadow-sm transition-colors"
-                        title="Compartir por WhatsApp"
+                        aria-label="Compartir por WhatsApp"
                       >
                         <MessageSquare className="w-4 h-4" />
                       </button>
@@ -282,58 +287,49 @@ export default function DashboardOverviewPage() {
         </div>
       )}
 
-      {/* ── CLABE REGISTRATION MODAL ── */}
-      {isClabeModalOpen && (
-        <div className="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm z-50 flex items-center justify-center px-6">
-          <div className="bg-card rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative border border-border">
+      {/* ── CLABE REGISTRATION DIALOG ── */}
+      <Dialog open={isClabeModalOpen} onOpenChange={setIsClabeModalOpen}>
+        <DialogContent className="rounded-[32px] max-w-sm p-6">
+          <DialogHeader className="text-center flex flex-col items-center space-y-2">
+            <Landmark className="w-10 h-10 text-primary mb-1" />
+            <DialogTitle className="text-lg font-black text-foreground">Registrar CLABE de Recibo</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground font-semibold">
+              Ingresa tu CLABE interbancaria de 18 dígitos para poder recibir transferencias de inmediato.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-4">
+            <div className="bg-muted/30 border border-border rounded-2xl p-4">
+              <label className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-1">CLABE Interbancaria (18 dígitos)</label>
+              <input
+                type="text"
+                maxLength={18}
+                placeholder="000000000000000000"
+                value={clabeInput}
+                onChange={e => setClabeInput(e.target.value.replace(/\D/g, ''))}
+                className="w-full text-base font-mono font-bold tracking-widest outline-none border-none bg-transparent text-foreground"
+              />
+            </div>
+
+            <div className="text-[10px] text-muted-foreground font-semibold leading-relaxed p-3 bg-muted/50 rounded-xl flex items-center gap-2 border border-border/40">
+              <Lock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+              <span>Tus datos están protegidos. Pika solo orquesta las transferencias directas a tu banco.</span>
+            </div>
+
             <button
-              onClick={() => setIsClabeModalOpen(false)}
-              className="absolute right-4 top-4 w-8 h-8 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground flex items-center justify-center transition-colors"
+              onClick={handleRegisterClabe}
+              disabled={clabeInput.length !== 18 || registeringClabe}
+              className="w-full py-3.5 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground text-primary-foreground font-black rounded-full text-sm shadow transition-all flex items-center justify-center gap-2"
             >
-              <X className="w-4 h-4" />
+              {registeringClabe ? 'Guardando...' : (
+                <span className="flex items-center gap-1.5 justify-center">
+                  Vincular cuenta <Zap className="w-4 h-4 text-primary-foreground shrink-0" />
+                </span>
+              )}
             </button>
-            
-            <div className="text-center mb-6 flex flex-col items-center">
-              <Landmark className="w-10 h-10 text-primary mb-2" />
-              <h3 className="text-lg font-black text-foreground mt-2">Registrar CLABE de Recibo</h3>
-              <p className="text-xs text-muted-foreground mt-1 font-semibold">
-                Ingresa tu CLABE interbancaria de 18 dígitos para poder recibir transferencias de inmediato.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-muted/30 border border-border rounded-2xl p-4">
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-1">CLABE Interbancaria (18 dígitos)</label>
-                <input
-                  type="text"
-                  maxLength={18}
-                  placeholder="000000000000000000"
-                  value={clabeInput}
-                  onChange={e => setClabeInput(e.target.value.replace(/\D/g, ''))}
-                  className="w-full text-base font-mono font-bold tracking-widest outline-none border-none bg-transparent text-foreground"
-                />
-              </div>
-
-              <div className="text-[10px] text-muted-foreground font-semibold leading-relaxed p-3 bg-muted/50 rounded-xl flex items-center gap-2 border border-border/40">
-                <Lock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                <span>Tus datos están protegidos. Pika solo orquesta las transferencias directas a tu banco.</span>
-              </div>
-
-              <button
-                onClick={handleRegisterClabe}
-                disabled={clabeInput.length !== 18 || registeringClabe}
-                className="w-full py-3.5 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground text-primary-foreground font-black rounded-full text-sm shadow transition-all flex items-center justify-center gap-2"
-              >
-                {registeringClabe ? 'Guardando...' : (
-                  <span className="flex items-center gap-1.5 justify-center">
-                    Vincular cuenta <Zap className="w-4 h-4 text-primary-foreground shrink-0" />
-                  </span>
-                )}
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

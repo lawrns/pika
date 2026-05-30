@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useToast } from '@/components/ui/use-toast'
 import { profileApi, receivingAccountsApi, type ReceivingAccount } from '@/lib/api'
+import { LoadingState } from '@/components/ui/loading-state'
 import {
   User, Bell, Landmark, Loader2, Save, Check, Lock, Plus, ShieldCheck
 } from 'lucide-react'
@@ -205,7 +206,7 @@ export default function SettingsPage() {
                   </div>
 
                   {accountsLoading ? (
-                    <div className="flex items-center justify-center py-6"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+                    <div className="flex items-center justify-center py-6"><LoadingState size="sm" message="Cargando cuentas..." /></div>
                   ) : accounts.length === 0 ? (
                     <p className="text-xs text-muted-foreground font-semibold text-center py-4">Aún no has vinculado una cuenta de cobro.</p>
                   ) : (

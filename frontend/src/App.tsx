@@ -5,6 +5,8 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LoginPage } from '@/components/auth/LoginPage'
 import { RegisterPage } from '@/components/auth/RegisterPage'
+import { Toaster } from '@/components/ui/toaster'
+import { ErrorBoundary } from '@/components/ui/error-boundary'
 
 const DashboardOverviewPage = lazy(() => import('@/components/pages/DashboardOverviewPage').then(m => ({ default: m.default })))
 const CobrosPage = lazy(() => import('@/components/pages/CobrosPage').then(m => ({ default: m.default })))
@@ -48,6 +50,8 @@ function LegacyPayRedirect() {
 export default function App() {
   return (
     <Suspense fallback={<PageSkeleton />}>
+      <Toaster />
+      <ErrorBoundary>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -79,6 +83,7 @@ export default function App() {
         } />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
+      </ErrorBoundary>
     </Suspense>
   )
 }

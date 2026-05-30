@@ -7,7 +7,9 @@ export interface ApiResponse<T> {
 }
 
 // Single source of truth for the API origin. Pages and the client all import this.
-export const API_BASE_URL = (import.meta.env.VITE_API_URL || 'https://isw6kd7ljtiew2p41enfegtz.45.132.242.102.sslip.io/api/v1').replace(/\/$/, '')
+// Set VITE_API_URL in your .env.local for local development.
+// In production (behind nginx proxy), use relative path so the same origin works.
+export const API_BASE_URL = (import.meta.env.VITE_API_URL || '/api/v1').replace(/\/$/, '')
 const TOKEN_KEY = 'pika-auth-token'
 
 export function getAuthToken(): string | null {

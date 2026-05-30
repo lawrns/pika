@@ -18,6 +18,16 @@ import {
 } from "lucide-react"
 import { useAppStore } from "@/store"
 import { PikaMark, Avatar } from "../pika/atoms"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
+
+const DASHBOARD_ROUTE_TITLES: Record<string, string> = {
+  '/dashboard': 'Inicio',
+  '/dashboard/cobros': 'Cobros',
+  '/dashboard/qr': 'QR de cobro',
+  '/dashboard/contacts': 'Contactos',
+  '/dashboard/settings': 'Ajustes',
+  '/dashboard/help': 'Ayuda',
+}
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   isCollapsed?: boolean
@@ -129,7 +139,8 @@ export function Sidebar({ className, isCollapsed }: SidebarProps) {
                 <p className="text-sm font-medium truncate">{user?.name || 'Guest'}</p>
                 <p className="text-xs text-muted-foreground truncate">{user?.email || 'Sign in'}</p>
               </div>
-              <Button variant="ghost" size="icon" className="shrink-0" onClick={logout}>
+              <ThemeToggle />
+              <Button variant="ghost" size="icon" className="shrink-0" onClick={logout} aria-label="Cerrar sesión">
                 <LogOut className="h-4 w-4" />
               </Button>
             </>
@@ -165,16 +176,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation()
 
-  const getPageTitle = () => {
-    const path = location.pathname
-    if (path === '/dashboard') return 'Inicio'
-    if (path === '/dashboard/cobros') return 'Cobros'
-    if (path === '/dashboard/qr') return 'QR de cobro'
-    if (path === '/dashboard/contacts') return 'Contactos'
-    if (path === '/dashboard/settings') return 'Ajustes'
-    if (path === '/dashboard/help') return 'Ayuda'
-    return 'Pika'
-  }
+  const getPageTitle = () => DASHBOARD_ROUTE_TITLES[location.pathname] || 'Pika'
   const isDashboardHome = location.pathname === '/dashboard' || location.pathname === '/dashboard/';
 
   return (
@@ -194,7 +196,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild>
-              <Link to="/dashboard/settings">
+              <Link to="/dashboard/settings" aria-label="Ajustes">
                 <User className="h-5 w-5" />
               </Link>
             </Button>
